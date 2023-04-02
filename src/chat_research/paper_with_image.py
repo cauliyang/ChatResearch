@@ -315,12 +315,3 @@ class Paper:
                     "\n", " "
                 )
         return section_dict
-
-
-def main():
-    path = r"demo.pdf"
-    paper = Paper(path=path)
-    paper.parse_pdf()
-    for key, value in paper.section_text_dict.items():
-        logger.info(key, value)
-        logger.info("*" * 40)

@@ -14,6 +14,9 @@ from loguru import logger
 from .paper_with_image import Paper
 
 from pydantic import BaseModel
+from pydantic import validator
+
+from pathlib import Path
 
 
 class PaperParams(BaseModel):
@@ -26,6 +29,12 @@ class PaperParams(BaseModel):
     save_image: bool
     file_format: str
     language: str
+
+    @validator("pdf_path")
+    def pdf_path_must_exist(cls, v):
+        if not Path(v).exists():
+            raise ValueError("pdf_path must exist")
+        return v
 
 
 # 定义Reader类
@@ -46,12 +55,17 @@ class Reader:
         self.key_word = key_word  # 读者感兴趣的关键词
         self.query = query  # 读者输入的搜索查询
         self.sort = sort  # 读者选择的排序方式
+
+        if args is None:
+            raise ValueError("args is None")
+
         if args.language == "en":
             self.language = "English"
         elif args.language == "zh":
             self.language = "Chinese"
         else:
-            self.language = "Chinese"
+            self.language = "English"
+
         self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
         self.root_path = root_path
         # 创建一个ConfigParser对象
@@ -634,10 +648,10 @@ def chat_paper_main(args):
         logger.info(
             "------------------paper_num: {}------------------".format(len(paper_list))
         )
-        [
-            logger.info(paper_index, paper_name.path.split("\\")[-1])
-            for paper_index, paper_name in enumerate(paper_list)
-        ]
+        for paper_index, paper_name in enumerate(paper_list):
+            name = paper_name.path.split("\\")[-1]
+            logger.info(f"{paper_index=}, {name=}")
+
         reader1.summary_with_chat(paper_list=paper_list)
     else:
         reader1 = Reader(
@@ -663,54 +677,60 @@ def add_subcommand(parser):
         metavar="",
         help="if none, the bot will download from arxiv with query",
     )
+
     subparser.add_argument(
         "--query",
         type=str,
         default="all: ChatGPT robot",
         metavar="",
-        help="the query string, ti: xx, au: xx, all: xx,",
+        help="the query string, ti: xx, au: xx, all: xx (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--key-word",
         type=str,
         default="reinforcement learning",
         metavar="",
-        help="the key word of user research fields",
+        help="the key word of user research fields (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--filter-keys",
         type=str,
         default="ChatGPT robot",
         metavar="",
-        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper",
+        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--max-results",
         type=int,
         default=1,
         metavar="",
-        help="the maximum number of results",
+        help="the maximum number of results (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--sort",
         type=str,
         default="Relevance",
         metavar="",
-        help="another is LastUpdatedDate",
+        help="another is LastUpdatedDate (default: %(default)s)",
     )
 
     subparser.add_argument(
         "--save-image",
         default=False,
         metavar="",
-        help="save image? It takes a minute or two to save a picture! But pretty",
+        help="save image? It takes a minute or two to save a picture! But pretty (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--file-format",
         type=str,
         default="md",
         metavar="",
-        help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy",
+        help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
     )
 
     subparser.add_argument(
@@ -718,7 +738,7 @@ def add_subcommand(parser):
         type=str,
         default="en",
         metavar="",
-        help="The other output lauguage is English, is en",
+        help="The other output lauguage is English, is en (default: %(default)s)",
     )
 
 

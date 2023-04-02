@@ -8,6 +8,8 @@ import tiktoken
 
 from loguru import logger
 from pydantic import BaseModel
+from pydantic import validator
+from pathlib import Path
 
 
 # ChatResponse
@@ -15,6 +17,12 @@ class ResponseParams(BaseModel):
     comment_path: str
     file_format: str
     language: str
+
+    @validator("comment_path")
+    def comment_path_must_exist(cls, v):
+        if not Path(v).exists():
+            raise ValueError("comment_path must exist")
+        return v
 
 
 # 定义Response类
@@ -48,6 +56,7 @@ class Response:
         self.chat_api_list = [
             api.strip() for api in self.chat_api_list if len(api) > 20
         ]
+
         self.cur_api = 0
         self.file_format = args.file_format
         self.max_token_num = 4096
@@ -56,8 +65,8 @@ class Response:
     def response_by_chatgpt(self, comment_path):
         htmls = []
         # 读取回复的内容
-        with open(comment_path, "r") as file:
-            comments = file.read()
+        with open(comment_path, "r", encoding="utf-8") as f:
+            comments = f.read()
 
         chat_response_text = self.chat_response(text=comments)
         htmls.append(chat_response_text)
@@ -165,19 +174,23 @@ def add_subcommand(parser):
     subparser.add_argument(
         "--comment-path",
         type=str,
-        default="review_comments.txt",
         metavar="",
         help="path of comment",
+        required=True,
     )
     subparser.add_argument(
-        "--file-format", type=str, default="txt", metavar="", help="output file format"
+        "--file-format",
+        type=str,
+        default="txt",
+        metavar="",
+        help="output file format (default: %(default)s)",
     )
     subparser.add_argument(
         "--language",
         type=str,
         default="en",
         metavar="",
-        help="output language, en or zh",
+        help="output language, en or zh (default: %(default)s)",
     )
 
     return name

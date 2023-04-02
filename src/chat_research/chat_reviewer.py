@@ -10,6 +10,10 @@ from typing import Optional
 from pathlib import Path
 from loguru import logger
 from pydantic import BaseModel
+
+
+from pydantic import validator
+
 from .paper import Paper
 
 
@@ -19,6 +23,11 @@ class ReviewerParams(BaseModel):
     review_format: Optional[str] = None
     research_fields: str
     language: str
+
+    @validator("paper_path")
+    def paper_path_must_exist(cls, v):
+        if not Path(v).exists():
+            raise ValueError("paper_path must exist")
 
 
 REVIEW_FORMAT = """
@@ -266,27 +275,39 @@ def add_subcommand(parser):
     name = "reviewer"
     subparser = parser.add_parser(name)
     subparser.add_argument(
-        "--paper-path", type=str, default="", metavar="", help="path of papers"
+        "--paper-path",
+        type=str,
+        metavar="",
+        help="path of papers",
+        required=True,
     )
+
     subparser.add_argument(
-        "--file-format", type=str, default="txt", metavar="", help="output file format"
+        "--file-format",
+        type=str,
+        default="txt",
+        metavar="",
+        help="output file format (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--review-format", type=str, metavar="", help="review format"
     )
+
     subparser.add_argument(
         "--research-fields",
         type=str,
         default="computer science, artificial intelligence and reinforcement learning",
         metavar="",
-        help="the research fields of paper",
+        help="the research fields of paper (default: %(default)s)",
     )
+
     subparser.add_argument(
         "--language",
         type=str,
         default="en",
         metavar="",
-        help="output language, en or zh",
+        help="output language, en or zh (default: %(default)s)",
     )
 
     return name

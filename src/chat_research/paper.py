@@ -13,14 +13,11 @@ class Paper:
         self.section_texts = {}  # 段落内容
         self.abs = abs
         self.title_page = 0
+        self.pdf = fitz.open(self.path)  # pdf文档
 
-        if title == "":
-            self.pdf = fitz.open(self.path)  # pdf文档
-            self.title = self.get_title()
-            self.parse_pdf()
-        else:
-            self.title = title
+        self.title = self.get_title() if title == "" else title
 
+        self.parse_pdf()
         self.authors = authors
         self.roman_num = [
             "I",
