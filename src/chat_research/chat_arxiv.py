@@ -37,7 +37,6 @@ class Reader:
         key_word,
         query,
         root_path="./",
-        gitee_key="",
         sort=arxiv.SortCriterion.SubmittedDate,
         user_name="defualt",
         args=None,
@@ -64,7 +63,7 @@ class Reader:
         self.file_format = args.file_format
 
         if args.save_image:
-            self.gitee_key = self.config.get("Gitee", "api")
+            self.gitee_key = self.config["Gitee"]["api"]
         else:
             self.gitee_key = ""
 

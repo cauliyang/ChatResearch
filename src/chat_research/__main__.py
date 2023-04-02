@@ -1,4 +1,5 @@
 import argparse
+import sys
 from typing import Any, Optional
 
 from loguru import logger
@@ -47,6 +48,12 @@ def main():
         title="subcommand",
         description="valid subcommand",
         dest="subcommand",
+    )
+    logger.remove()
+    logger.add(
+        sys.stderr,
+        format="'<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>",
+        level="INFO",
     )
 
     chat_reviewer_command = chat_reviewer.add_subcommand(subparser)

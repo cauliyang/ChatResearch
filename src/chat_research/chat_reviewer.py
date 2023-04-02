@@ -62,13 +62,15 @@ xxx
 class Reviewer:
     # 初始化方法，设置属性
     def __init__(self, args=None):
+        if args is None:
+            raise ValueError("args is None")
+
         if args.language == "en":
             self.language = "English"
         elif args.language == "zh":
             self.language = "Chinese"
         else:
             self.language = "English"
-            # 创建一个ConfigParser对象
 
         self.research_fields = args.research_fields
         self.review_format = args.review_format
