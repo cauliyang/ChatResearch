@@ -1,4 +1,3 @@
-import configparser
 import datetime
 import os
 from pathlib import Path
@@ -10,6 +9,8 @@ from loguru import logger
 from pydantic import BaseModel, validator
 
 from chat_research.utils import report_token_usage
+
+from .utils import load_config
 
 
 # ChatResponse
@@ -39,23 +40,7 @@ class Response:
         else:
             self.language = "Chinese"
 
-            # 创建一个ConfigParser对象
-        self.config = configparser.ConfigParser()
-        # 读取配置文件
-        self.config.read("apikey.ini")
-        OPENAI_KEY = os.environ.get("OPENAI_KEY", "")
-        # 获取某个键对应的值
-        self.chat_api_list = (
-            self.config.get("OpenAI", "OPENAI_API_KEYS")[1:-1]
-            .replace("'", "")
-            .split(",")
-        )
-        self.chat_api_list.append(OPENAI_KEY)
-
-        # prevent short strings from being incorrectly used as API keys.
-        self.chat_api_list = [
-            api.strip() for api in self.chat_api_list if len(api) > 20
-        ]
+        self.config, self.chat_api_list = load_config()
 
         self.cur_api = 0
         self.file_format = args.file_format
