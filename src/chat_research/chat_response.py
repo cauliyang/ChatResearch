@@ -166,13 +166,18 @@ def add_subcommand(parser):
         "--comment-path",
         type=str,
         default="review_comments.txt",
+        metavar="",
         help="path of comment",
     )
     subparser.add_argument(
-        "--file-format", type=str, default="txt", help="output file format"
+        "--file-format", type=str, default="txt", metavar="", help="output file format"
     )
     subparser.add_argument(
-        "--language", type=str, default="en", help="output language, en or zh"
+        "--language",
+        type=str,
+        default="en",
+        metavar="",
+        help="output language, en or zh",
     )
 
     return name

@@ -11,7 +11,7 @@ import tenacity
 import tiktoken
 from loguru import logger
 
-from .get_paper_from_pdf import Paper
+from .paper_with_image import Paper
 
 from pydantic import BaseModel
 
@@ -22,7 +22,7 @@ class PaperParams(BaseModel):
     key_word: str
     filter_keys: str
     max_results: int
-    sort: arxiv.SortCriterion.SubmittedDate
+    sort: str
     save_image: bool
     file_format: str
     language: str
@@ -152,7 +152,8 @@ class Reader:
                 # result.download_pdf(path, filename=pdf_name)
                 self.try_download_pdf(result, path, pdf_name)
                 paper_path = os.path.join(path, pdf_name)
-                logger.info("paper_path:", paper_path)
+                logger.info(f"{paper_path=}")
+
                 paper = Paper(
                     path=paper_path,
                     url=result.entry_id,
@@ -160,8 +161,7 @@ class Reader:
                     abs=result.summary.replace("-\n", "-").replace("\n", " "),
                     authers=[str(aut) for aut in result.authors],
                 )
-                # 下载完毕，开始解析：
-                paper.parse_pdf()
+
                 paper_list.append(paper)
             except Exception as e:
                 logger.info("download_error:", e)
@@ -660,42 +660,56 @@ def add_subcommand(parser):
         "--pdf-path",
         type=str,
         default="",
+        metavar="",
         help="if none, the bot will download from arxiv with query",
     )
     subparser.add_argument(
         "--query",
         type=str,
         default="all: ChatGPT robot",
+        metavar="",
         help="the query string, ti: xx, au: xx, all: xx,",
     )
     subparser.add_argument(
         "--key-word",
         type=str,
         default="reinforcement learning",
+        metavar="",
         help="the key word of user research fields",
     )
     subparser.add_argument(
         "--filter-keys",
         type=str,
         default="ChatGPT robot",
+        metavar="",
         help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper",
     )
     subparser.add_argument(
-        "--max-results", type=int, default=1, help="the maximum number of results"
+        "--max-results",
+        type=int,
+        default=1,
+        metavar="",
+        help="the maximum number of results",
     )
     subparser.add_argument(
-        "--sort", type=str, default="Relevance", help="another is LastUpdatedDate"
+        "--sort",
+        type=str,
+        default="Relevance",
+        metavar="",
+        help="another is LastUpdatedDate",
     )
 
     subparser.add_argument(
         "--save-image",
         default=False,
+        metavar="",
         help="save image? It takes a minute or two to save a picture! But pretty",
     )
     subparser.add_argument(
         "--file-format",
         type=str,
         default="md",
+        metavar="",
         help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy",
     )
 
@@ -703,9 +717,9 @@ def add_subcommand(parser):
         "--language",
         type=str,
         default="en",
+        metavar="",
         help="The other output lauguage is English, is en",
     )
-    return name
 
 
 def cli(args):

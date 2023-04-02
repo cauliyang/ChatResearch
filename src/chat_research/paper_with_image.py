@@ -15,12 +15,11 @@ class Paper:
         self.section_texts = {}  # 段落内容
         self.abs = abs
         self.title_page = 0
-        if title == "":
-            self.pdf = fitz.open(self.path)  # pdf文档
-            self.title = self.get_title()
-            self.parse_pdf()
-        else:
-            self.title = title
+        self.pdf = fitz.open(self.path)  # pdf文档
+
+        self.title = self.get_title() if title == "" else title
+
+        self.parse_pdf()
         self.authers = authers
         self.roman_num = [
             "I",
@@ -91,12 +90,13 @@ class Paper:
                     if image_size > max_size:
                         max_size = image_size
                     image_list.append(image)
+
         for image in image_list:
             image_size = image.size[0] * image.size[1]
             if image_size == max_size:
                 image_name = f"image.{ext}"
                 im_path = os.path.join(image_path, image_name)
-                logger.info("im_path:", im_path)
+                logger.info("image_path:", im_path)
 
                 max_pix = 480
                 min(image.size[0], image.size[1])
@@ -177,14 +177,14 @@ class Paper:
                         font_size = block["lines"][0]["spans"][0][
                             "size"
                         ]  # 获取第一行第一段文字的字体大小
-                        # logger.info(font_size)
+                        # print(font_size)
                         if (
                             abs(font_size - max_font_sizes[-1]) < 0.3
                             or abs(font_size - max_font_sizes[-2]) < 0.3
                         ):
-                            # logger.info("The string is bold.", max_string, "font_size:", font_size, "font_flags:", font_flags)
+                            # print("The string is bold.", max_string, "font_size:", font_size, "font_flags:", font_flags)
                             if len(cur_string) > 4 and "arXiv" not in cur_string:
-                                # logger.info("The string is bold.", max_string, "font_size:", font_size, "font_flags:", font_flags)
+                                # print("The string is bold.", max_string, "font_size:", font_size, "font_flags:", font_flags)
                                 if cur_title == "":
                                     cur_title += cur_string
                                 else:
@@ -201,6 +201,9 @@ class Paper:
             "Introduction",
             "Related Work",
             "Background",
+            "Introduction and Motivation",
+            "Computation Function",
+            "Routing Function",
             "Preliminary",
             "Problem Formulation",
             "Methods",
@@ -259,7 +262,9 @@ class Paper:
         # 再处理其他章节：
         text_list = [page.get_text() for page in self.pdf]
         for sec_index, sec_name in enumerate(self.section_page_dict):
-            logger.info(sec_index, sec_name, self.section_page_dict[sec_name])
+            logger.info(
+                f"{sec_index=}, {sec_name=}, {self.section_page_dict[sec_name]}"
+            )
             if sec_index <= 0 and self.abs:
                 continue
             else:
@@ -287,7 +292,7 @@ class Paper:
                         cur_sec_text += text_list[start_page][start_i:end_i]
                 else:
                     for page_i in range(start_page, end_page):
-                        #                         logger.info("page_i:", page_i)
+                        #                         print("page_i:", page_i)
                         if page_i == start_page:
                             if text_list[start_page].find(sec_name) == -1:
                                 start_i = text_list[start_page].find(sec_name.upper())

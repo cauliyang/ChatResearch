@@ -36,7 +36,7 @@ class RichHelpFormatter(argparse.HelpFormatter):
 
     def __init__(self, *args: Any, **kwargs: Any):
         """RichHelpFormatter."""
-        super().__init__(*args, max_help_position=42, **kwargs)  # type: ignore
+        super().__init__(*args, max_help_position=42, width=80, **kwargs)  # type: ignore
 
 
 def main():

@@ -5,7 +5,6 @@ description = "Use ChatGPT to summarize the arXiv papers."
 authors = ["Yangyang Li <yangyang.li@northwestern.edu>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "chat_research"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -24,7 +23,7 @@ rich = "^13.3.3"
 pydantic = "^1.10.7"
 
 [tool.poetry.scripts]
-chatre = "chat-research.__main__:main"
+chatre = "chat_research.__main__:main"
 
 [tool.ruff]
 line-length = 120

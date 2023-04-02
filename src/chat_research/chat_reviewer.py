@@ -10,13 +10,13 @@ from typing import Optional
 from pathlib import Path
 from loguru import logger
 from pydantic import BaseModel
-from .get_paper import Paper
+from .paper import Paper
 
 
 class ReviewerParams(BaseModel):
     paper_path: str
     file_format: str
-    review_format: Optional[str]
+    review_format: Optional[str] = None
     research_fields: str
     language: str
 
@@ -265,19 +265,28 @@ def chat_reviewer_main(args):
 def add_subcommand(parser):
     name = "reviewer"
     subparser = parser.add_parser(name)
-    subparser.add_argument("--paper-path", type=str, default="", help="path of papers")
     subparser.add_argument(
-        "--file-format", type=str, default="txt", help="output file format"
+        "--paper-path", type=str, default="", metavar="", help="path of papers"
     )
-    subparser.add_argument("--review-format", type=str, help="review format")
+    subparser.add_argument(
+        "--file-format", type=str, default="txt", metavar="", help="output file format"
+    )
+    subparser.add_argument(
+        "--review-format", type=str, metavar="", help="review format"
+    )
     subparser.add_argument(
         "--research-fields",
         type=str,
         default="computer science, artificial intelligence and reinforcement learning",
+        metavar="",
         help="the research fields of paper",
     )
     subparser.add_argument(
-        "--language", type=str, default="en", help="output language, en or zh"
+        "--language",
+        type=str,
+        default="en",
+        metavar="",
+        help="output language, en or zh",
     )
 
     return name
