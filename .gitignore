@@ -141,3 +141,4 @@ chataca.toml
 .DS*
 *.ini
 pdf_files
+export

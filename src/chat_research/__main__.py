@@ -1,6 +1,8 @@
 import argparse
 from typing import Any, Optional
 
+from loguru import logger
+
 from . import chat_arxiv, chat_paper, chat_response, chat_reviewer
 
 
@@ -58,6 +60,7 @@ def main():
         raise SystemExit
 
     if args.subcommand == chat_paper_command:
+        print("chat_paper")
         chat_paper.cli(args)
     elif args.subcommand == chat_arxiv_command:
         chat_arxiv.cli(args)
@@ -65,3 +68,5 @@ def main():
         chat_response.cli(args)
     elif args.subcommand == chat_reviewer_command:
         chat_reviewer.cli(args)
+
+    logger.success("Done")

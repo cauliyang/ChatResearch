@@ -276,7 +276,7 @@ class Paper:
                     ]
                 else:
                     end_page = len(text_list)
-                logger.info("{start_page=}, {end_page=}")
+                logger.info(f"{start_page=}, {end_page=}")
                 cur_sec_text = ""
                 if end_page - start_page == 0:
                     if sec_index < len(list(self.section_page_dict.keys())) - 1:

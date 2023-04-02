@@ -43,7 +43,7 @@ class Reader:
         key_word,
         query,
         filter_keys,
-        root_path="./",
+        root_path=".",
         gitee_key="",
         sort=arxiv.SortCriterion.SubmittedDate,
         user_name="defualt",
@@ -65,7 +65,7 @@ class Reader:
             self.language = "English"
 
         self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
-        self.root_path = root_path
+        self.root_path = Path(root_path)
         # 创建一个ConfigParser对象
         self.config = configparser.ConfigParser()
         # 读取配置文件
@@ -84,7 +84,9 @@ class Reader:
             api.strip() for api in self.chat_api_list if len(api) > 20
         ]
         self.cur_api = 0
+
         self.file_format = args.file_format
+
         if args.save_image:
             self.gitee_key = self.config.get("Gitee", "api")
         else:
@@ -121,7 +123,6 @@ class Reader:
             if meet_num == len(filter_keys.split(" ")):
                 filter_results.append(result)
                 # break
-        logger.info("The number of paper after filting：")
         logger.info(f"filter_results: {len(filter_results)}")
         logger.info("filter_papers:")
         for index, result in enumerate(filter_results):
@@ -137,33 +138,30 @@ class Reader:
     def download_pdf(self, filter_results):
         # 先创建文件夹
         date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
-        str(self.key_word.replace(":", " "))
-        path = (
-            self.root_path
-            + "pdf_files/"
-            + self.query.replace("au: ", "")
+
+        query_str = (
+            self.query.replace("au:", "")
             .replace("title: ", "")
             .replace("ti: ", "")
             .replace(":", " ")[:25]
-            + "-"
-            + date_str
         )
 
-        try:
-            os.makedirs(path)
-        except Exception:
-            pass
+        path = self.root_path / "pdf_files" / f"{query_str}-{date_str}"
+        path.mkdir(parents=True, exist_ok=True)
 
         logger.info(f"All_paper: {len(filter_results)}")
         # 开始下载：
         paper_list = []
+
         for r_index, result in enumerate(filter_results):
             try:
                 title_str = self.validateTitle(result.title)
                 pdf_name = title_str + ".pdf"
                 # result.download_pdf(path, filename=pdf_name)
-                self.try_download_pdf(result, path, pdf_name)
-                paper_path = os.path.join(path, pdf_name)
+                self.try_download_pdf(result, path.as_posix(), pdf_name)
+
+                paper_path = path / pdf_name
+
                 logger.info(f"{paper_path=}")
 
                 paper = Paper(
@@ -273,6 +271,8 @@ class Reader:
                     chat_summary_text = self.chat_summary(
                         text=text, summary_prompt_token=summary_prompt_token
                     )
+                else:
+                    raise e
 
             htmls.append("## Paper:" + str(paper_index + 1))
             htmls.append("\n\n\n")
@@ -298,7 +298,7 @@ class Reader:
                 try:
                     chat_method_text = self.chat_method(text=text)
                 except Exception as e:
-                    logger.info("method_error:", e)
+                    logger.info(f"method_error: {e}")
                     if "maximum context" in str(e):
                         current_tokens_index = (
                             str(e).find("your messages resulted in")
@@ -339,11 +339,12 @@ class Reader:
                 text = summary_text + "\n\n<Conclusion>:\n\n" + conclusion_text
             else:
                 text = summary_text
+
             chat_conclusion_text = ""
             try:
                 chat_conclusion_text = self.chat_conclusion(text=text)
             except Exception as e:
-                logger.info("conclusion_error:", e)
+                logger.info(f"conclusion_error: {e}")
                 if "maximum context" in str(e):
                     current_tokens_index = (
                         str(e).find("your messages resulted in")
@@ -362,22 +363,25 @@ class Reader:
 
             # # 整合成一个文件，打包保存下来。
             date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
-            export_path = os.path.join(self.root_path, "export")
-            if not os.path.exists(export_path):
-                os.makedirs(export_path)
-            mode = "w" if paper_index == 0 else "a"
-            file_name = os.path.join(
-                export_path,
-                date_str
-                + "-"
-                + self.validateTitle(paper.title[:80])
-                + "."
-                + self.file_format,
-            )
-            self.export_to_markdown("\n".join(htmls), file_name=file_name, mode=mode)
 
-            # file_name = os.path.join(export_path, date_str+'-'+self.validateTitle(paper.title)+".md")
-            # self.export_to_markdown("\n".join(htmls), file_name=file_name, mode=mode)
+            export_path = self.root_path / "export"
+
+            if not export_path.exists():
+                export_path.mkdir(parents=True, exist_ok=True)
+
+            mode = "w" if paper_index == 0 else "a"
+
+            file_name = (
+                Path(export_path)
+                / f"{date_str}-{self.validateTitle(paper.title[:80])}.{self.file_format}"
+            )
+
+            self.export_to_markdown(
+                "\n".join([item.strip() for item in htmls]),
+                file_name=file_name,
+                mode=mode,
+            )
+
             htmls = []
 
     @tenacity.retry(
@@ -618,6 +622,7 @@ def chat_paper_main(args):
         paper_list = []
         if args.pdf_path.endswith(".pdf"):
             paper_list.append(Paper(path=args.pdf_path))
+            logger.info(f"read pdf file {args.pdf_path}")
         else:
             for root, dirs, files in os.walk(args.pdf_path):
                 logger.info(f"root: {root}, dirs: {dirs}, files: {files}")
@@ -625,6 +630,8 @@ def chat_paper_main(args):
                     # 如果找到PDF文件，则将其复制到目标文件夹中
                     if filename.endswith(".pdf"):
                         paper_list.append(Paper(path=os.path.join(root, filename)))
+                        logger.info(f"read pdf file {args.pdf_path}")
+
         logger.info(
             "------------------paper_num: {}------------------".format(len(paper_list))
         )
@@ -721,7 +728,10 @@ def add_subcommand(parser):
         help="The other output lauguage is English, is en (default: %(default)s)",
     )
 
+    return name
+
 
 def cli(args):
+    print("hss")
     parameters = PaperParams(**vars(args))
     chat_paper_main(parameters)
