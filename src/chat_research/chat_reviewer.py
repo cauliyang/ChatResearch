@@ -2,17 +2,16 @@ import configparser
 import datetime
 import os
 import re
+from pathlib import Path
+from typing import Optional
 
 import openai
 import tenacity
 import tiktoken
-from typing import Optional
-from pathlib import Path
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
-
-from pydantic import validator
+from chat_research.utils import report_token_usage
 
 from .paper import Paper
 
@@ -231,10 +230,9 @@ class Reviewer:
         logger.info("********" * 10)
         logger.info(result)
         logger.info("********" * 10)
-        logger.info("prompt_token_used:", response.usage.prompt_tokens)
-        logger.info("completion_token_used:", response.usage.completion_tokens)
-        logger.info("total_token_used:", response.usage.total_tokens)
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+
+        report_token_usage(response)
+
         return result
 
     def export_to_markdown(self, text, file_name, mode="w"):
@@ -255,7 +253,7 @@ def chat_reviewer_main(args):
         paper_list.append(Paper(path=args.paper_path))
     else:
         for root, dirs, files in os.walk(args.paper_path):
-            logger.info("root:", root, "dirs:", dirs, "files:", files)  # 当前目录路径
+            logger.info(f"root: {root}, dirs: {dirs}, files: {files}")
             for filename in files:
                 # 如果找到PDF文件，则将其复制到目标文件夹中
                 if filename.endswith(".pdf"):

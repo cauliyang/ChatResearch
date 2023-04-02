@@ -3,6 +3,7 @@ import configparser
 import datetime
 import os
 import re
+from pathlib import Path
 
 import arxiv
 import openai
@@ -10,13 +11,10 @@ import requests
 import tenacity
 import tiktoken
 from loguru import logger
+from pydantic import BaseModel, validator
 
 from .paper_with_image import Paper
-
-from pydantic import BaseModel
-from pydantic import validator
-
-from pathlib import Path
+from .utils import report_token_usage
 
 
 class PaperParams(BaseModel):
@@ -112,7 +110,7 @@ class Reader:
         filter_results = []
         filter_keys = self.filter_keys
 
-        logger.info("filter_keys:", self.filter_keys)
+        logger.info(f"filter_keys {self.filter_keys}")
         # 确保每个关键词都能在摘要中找到，才算是目标论文
         for index, result in enumerate(search.results()):
             abs_text = result.summary.replace("-\n", "-").replace("\n", " ")
@@ -123,8 +121,8 @@ class Reader:
             if meet_num == len(filter_keys.split(" ")):
                 filter_results.append(result)
                 # break
-        logger.info("筛选后剩下的论文数量：")
-        logger.info("filter_results:", len(filter_results))
+        logger.info("The number of paper after filting：")
+        logger.info(f"filter_results: {len(filter_results)}")
         logger.info("filter_papers:")
         for index, result in enumerate(filter_results):
             logger.info(f"{index=}, {result.title=}, {result.updated}")
@@ -156,7 +154,7 @@ class Reader:
         except Exception:
             pass
 
-        logger.info("All_paper:", len(filter_results))
+        logger.info(f"All_paper: {len(filter_results)}")
         # 开始下载：
         paper_list = []
         for r_index, result in enumerate(filter_results):
@@ -178,7 +176,7 @@ class Reader:
 
                 paper_list.append(paper)
             except Exception as e:
-                logger.info("download_error:", e)
+                logger.warning(f"download_error: {e}")
                 pass
         return paper_list
 
@@ -231,7 +229,7 @@ class Reader:
             + path
         )
         rep = requests.post(url, json=payload).json()
-        logger.info("rep:", rep)
+        logger.info(f"{rep=}")
         if "content" in rep.keys():
             image_url = rep["content"]["download_url"]
         else:
@@ -261,7 +259,7 @@ class Reader:
             try:
                 chat_summary_text = self.chat_summary(text=text)
             except Exception as e:
-                logger.info("summary_error:", e)
+                logger.warning(f"summary_error: {e}")
                 if "maximum context" in str(e):
                     current_tokens_index = (
                         str(e).find("your messages resulted in")
@@ -439,16 +437,10 @@ class Reader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
-        logger.info("conclusion_result:\n", result)
-        logger.info(
-            "prompt_token_used:",
-            response.usage.prompt_tokens,
-            "completion_token_used:",
-            response.usage.completion_tokens,
-            "total_token_used:",
-            response.usage.total_tokens,
-        )
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+
+        logger.info(f"conclusion_result:\n{result}")
+        report_token_usage(response)
+
         return result
 
     @tenacity.retry(
@@ -509,16 +501,9 @@ class Reader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
-        logger.info("method_result:\n", result)
-        logger.info(
-            "prompt_token_used:",
-            response.usage.prompt_tokens,
-            "completion_token_used:",
-            response.usage.completion_tokens,
-            "total_token_used:",
-            response.usage.total_tokens,
-        )
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+        logger.info(f"method_result:\n{result}")
+        report_token_usage(response)
+
         return result
 
     @tenacity.retry(
@@ -588,16 +573,11 @@ class Reader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
-        logger.info("summary_result:\n", result)
-        logger.info(
-            "prompt_token_used:",
-            response.usage.prompt_tokens,
-            "completion_token_used:",
-            response.usage.completion_tokens,
-            "total_token_used:",
-            response.usage.total_tokens,
-        )
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+
+        logger.info(f"summary_result:\n{result}")
+
+        report_token_usage(response)
+
         return result
 
     def export_to_markdown(self, text, file_name, mode="w"):
@@ -640,7 +620,7 @@ def chat_paper_main(args):
             paper_list.append(Paper(path=args.pdf_path))
         else:
             for root, dirs, files in os.walk(args.pdf_path):
-                logger.info("root:", root, "dirs:", dirs, "files:", files)  # 当前目录路径
+                logger.info(f"root: {root}, dirs: {dirs}, files: {files}")
                 for filename in files:
                     # 如果找到PDF文件，则将其复制到目标文件夹中
                     if filename.endswith(".pdf"):

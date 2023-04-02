@@ -1,15 +1,15 @@
 import configparser
 import datetime
 import os
+from pathlib import Path
 
 import openai
 import tenacity
 import tiktoken
-
 from loguru import logger
-from pydantic import BaseModel
-from pydantic import validator
-from pathlib import Path
+from pydantic import BaseModel, validator
+
+from chat_research.utils import report_token_usage
 
 
 # ChatResponse
@@ -148,10 +148,9 @@ class Response:
         logger.info("********" * 10)
         logger.info(result)
         logger.info("********" * 10)
-        logger.info("prompt_token_used:", response.usage.prompt_tokens)
-        logger.info("completion_token_used:", response.usage.completion_tokens)
-        logger.info("total_token_used:", response.usage.total_tokens)
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+
+        report_token_usage(response)
+
         return result
 
     def export_to_markdown(self, text, file_name, mode="w"):

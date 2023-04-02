@@ -1,9 +1,9 @@
-import fitz
 import io
 import os
-from PIL import Image
 
+import fitz
 from loguru import logger
+from PIL import Image
 
 
 class Paper:
@@ -42,7 +42,7 @@ class Paper:
         self.text_list = [page.get_text() for page in self.pdf]
         self.all_text = " ".join(self.text_list)
         self.section_page_dict = self._get_all_page_index()  # 段落与页码的对应字典
-        logger.info("section_page_dict", self.section_page_dict)
+        logger.info(f"section_page_dict {self.section_page_dict}")
         self.section_text_dict = self._get_all_page()  # 段落与内容的对应字典
         self.section_text_dict.update({"title": self.title})
         self.section_text_dict.update({"paper_info": self.get_paper_info()})
@@ -96,7 +96,7 @@ class Paper:
             if image_size == max_size:
                 image_name = f"image.{ext}"
                 im_path = os.path.join(image_path, image_name)
-                logger.info("image_path:", im_path)
+                logger.info(f"image_path: {im_path}")
 
                 max_pix = 480
                 min(image.size[0], image.size[1])
@@ -135,11 +135,11 @@ class Paper:
                         point_split_list[0] in self.roman_num
                         or point_split_list[0] in self.digit_num
                     ):
-                        logger.info("line:", line)
+                        logger.info(f"{line=}")
                         chapter_names.append(line)
                     # 这段代码可能会有新的bug，本意是为了消除"Introduction"的问题的！
                     elif 1 < len(point_split_list) < 5:
-                        logger.info("line:", line)
+                        logger.info(f"{line=}")
                         chapter_names.append(line)
 
         return chapter_names
@@ -162,7 +162,7 @@ class Paper:
                             max_font_size = font_size  # 更新最大值
                             block["lines"][0]["spans"][0]["text"]  # 更新最大值对应的字符串
         max_font_sizes.sort()
-        logger.info("max_font_sizes", max_font_sizes[-10:])
+        logger.info(f"max_font_sizes {max_font_sizes[-10:]}")
         cur_title = ""
         for page_index, page in enumerate(doc):  # 遍历每一页
             text = page.get_text("dict")  # 获取页面上的文本信息
@@ -276,7 +276,7 @@ class Paper:
                     ]
                 else:
                     end_page = len(text_list)
-                logger.info("start_page, end_page:", start_page, end_page)
+                logger.info("{start_page=}, {end_page=}")
                 cur_sec_text = ""
                 if end_page - start_page == 0:
                     if sec_index < len(list(self.section_page_dict.keys())) - 1:

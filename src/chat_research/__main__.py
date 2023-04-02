@@ -1,11 +1,7 @@
 import argparse
 from typing import Any, Optional
 
-
-from . import chat_arxiv
-from . import chat_response
-from . import chat_paper
-from . import chat_reviewer
+from . import chat_arxiv, chat_paper, chat_response, chat_reviewer
 
 
 class RichArgParser(argparse.ArgumentParser):

@@ -12,10 +12,10 @@ import tenacity
 import tiktoken
 from bs4 import BeautifulSoup
 from loguru import logger
-
 from pydantic import BaseModel
 
 from .paper_with_image import Paper
+from .utils import report_token_usage
 
 
 class ArxivParams(BaseModel):
@@ -223,7 +223,7 @@ class Reader:
             try:
                 chat_summary_text = self.chat_summary(text=text)
             except Exception as e:
-                logger.info("summary_error:", e)
+                logger.info(f"summary_error: {e}")
                 if "maximum context" in str(e):
                     current_tokens_index = (
                         str(e).find("your messages resulted in")
@@ -264,7 +264,7 @@ class Reader:
                 try:
                     chat_method_text = self.chat_method(text=text)
                 except Exception as e:
-                    logger.info("method_error:", e)
+                    logger.info(f"method_error: {e}")
                     if "maximum context" in str(e):
                         current_tokens_index = (
                             str(e).find("your messages resulted in")
@@ -312,7 +312,7 @@ class Reader:
             try:
                 chat_conclusion_text = self.chat_conclusion(text=text)
             except Exception as e:
-                logger.info("conclusion_error:", e)
+                logger.info(f"conclusion_error: {e}")
                 if "maximum context" in str(e):
                     current_tokens_index = (
                         str(e).find("your messages resulted in")
@@ -405,16 +405,9 @@ class Reader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
-        logger.info("conclusion_result:\n", result)
-        logger.info(
-            "prompt_token_used:",
-            response.usage.prompt_tokens,
-            "completion_token_used:",
-            response.usage.completion_tokens,
-            "total_token_used:",
-            response.usage.total_tokens,
-        )
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+        logger.info(f"conclusion_result:\n{result}")
+        report_token_usage(response)
+
         return result
 
     @tenacity.retry(
@@ -476,15 +469,8 @@ class Reader:
         for choice in response.choices:
             result += choice.message.content
         logger.info("method_result:\n", result)
-        logger.info(
-            "prompt_token_used:",
-            response.usage.prompt_tokens,
-            "completion_token_used:",
-            response.usage.completion_tokens,
-            "total_token_used:",
-            response.usage.total_tokens,
-        )
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+        report_token_usage(response)
+
         return result
 
     @tenacity.retry(
@@ -555,16 +541,10 @@ class Reader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
-        logger.info("summary_result:\n", result)
-        logger.info(
-            "prompt_token_used:",
-            response.usage.prompt_tokens,
-            "completion_token_used:",
-            response.usage.completion_tokens,
-            "total_token_used:",
-            response.usage.total_tokens,
-        )
-        logger.info("response_time:", response.response_ms / 1000.0, "s")
+        logger.info(f"summary_result:\n{result}")
+
+        report_token_usage(response)
+
         return result
 
     def export_to_markdown(self, text, file_name, mode="w"):
