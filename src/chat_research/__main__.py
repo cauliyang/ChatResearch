@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from loguru import logger
 
-from . import chat_arxiv, chat_paper, chat_response, chat_reviewer
+from . import chat_arxiv, chat_config, chat_paper, chat_response, chat_reviewer
 
 
 class RichArgParser(argparse.ArgumentParser):
@@ -53,6 +53,7 @@ def main():
     chat_arxiv_command = chat_arxiv.add_subcommnd(subparser)
     chat_response_command = chat_response.add_subcommand(subparser)
     chat_paper_command = chat_paper.add_subcommand(subparser)
+    chat_config_command = chat_config.add_subcommand(subparser)
     args = parser.parse_args()
 
     if not args.subcommand:
@@ -68,5 +69,11 @@ def main():
         chat_response.cli(args)
     elif args.subcommand == chat_reviewer_command:
         chat_reviewer.cli(args)
+    elif args.subcommand == chat_config_command:
+        chat_config.cli(args)
+    else:
+        logger.error("Invalid subcommand")
+        parser.print_help()
+        raise SystemExit
 
     logger.success("Done")

@@ -1,7 +1,7 @@
-import configparser
 import os
 from pathlib import Path
 
+import toml
 from loguru import logger
 
 
@@ -13,32 +13,31 @@ def report_token_usage(response):
 
 
 def load_config():
-    config = configparser.ConfigParser()
-
-    default_path = Path.cwd() / "apikey.ini"
-    global_path = Path.home() / ".config" / "apikey.ini"
+    default_path = Path.cwd() / "apikey.toml"
+    global_path = Path.home() / ".config" / "apikey.toml"
 
     if default_path.exists():
-        config.read(default_path)
+        config = toml.load(default_path)
     elif global_path.exists():
-        config.read(global_path)
+        config = toml.load(global_path)
+    else:
+        raise FileNotFoundError("No apikey.toml found")
 
-    env_api = os.environ.get("OPENAI_KEY", None)
+    chat_api_list = config["OpenAI"]["OPENAI_API_KEYS"]
 
-    chat_api_list = (
-        config.get("OpenAI", "OPENAI_API_KEYS")[1:-1].replace("'", "").split(",")
-    )
-
+    env_api = os.environ.get("OPENAI_API_KEY", None)
     if env_api is not None:
         chat_api_list.append(env_api)
 
-    if len(chat_api_list) == 0:
+    new_chat_api_list = []
+    for i in chat_api_list:
+        if len(i.strip()) < 51:
+            logger.warning(f"API key {i} is too short, it will be skipped.")
+        else:
+            new_chat_api_list.append(i.strip())
+
+    if len(new_chat_api_list) == 0:
         logger.error("No API key found")
         raise SystemExit
 
-    for i in chat_api_list:
-        if len(i) < 52:
-            logger.error(f"API key {i} is too short")
-            raise SystemExit
-
-    return config, chat_api_list
+    return config, new_chat_api_list

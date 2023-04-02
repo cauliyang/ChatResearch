@@ -154,7 +154,7 @@ def chat_response_main(args):
 
 def add_subcommand(parser):
     name = "response"
-    subparser = parser.add_parser(name)
+    subparser = parser.add_parser(name, help="Generate reponse for review comment")
     subparser.add_argument(
         "--comment-path",
         type=str,

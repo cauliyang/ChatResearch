@@ -43,7 +43,6 @@ class Reader:
         query,
         filter_keys,
         root_path=".",
-        gitee_key="",
         sort=arxiv.SortCriterion.SubmittedDate,
         user_name="defualt",
         args=None,
@@ -71,10 +70,7 @@ class Reader:
 
         self.file_format = args.file_format
 
-        if args.save_image:
-            self.gitee_key = self.config.get("Gitee", "api")
-        else:
-            self.gitee_key = ""
+        self.gitee_key = self.config["Gitee"]["api"] if args.save_image else ""
 
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
@@ -194,20 +190,20 @@ class Reader:
 
         payload = {
             "access_token": self.gitee_key,
-            "owner": self.config.get("Gitee", "owner"),
-            "repo": self.config.get("Gitee", "repo"),
-            "path": self.config.get("Gitee", "path"),
+            "owner": self.config["Gitee"]["owner"],
+            "repo": self.config["Gitee"]["repo"],
+            "path": self.config["Gitee"]["path"],
             "content": base64_content,
             "message": "upload image",
         }
         # 这里需要修改成你的gitee的账户和仓库名，以及文件夹的名字：
         url = (
             "https://gitee.com/api/v5/repos/"
-            + self.config.get("Gitee", "owner")
+            + self.config["Gitee"]["owner"]
             + "/"
-            + self.config.get("Gitee", "repo")
+            + self.config["Gitee"]["repo"]
             + "/contents/"
-            + self.config.get("Gitee", "path")
+            + self.config["Gitee"]["path"]
             + "/"
             + path
         )
@@ -218,9 +214,9 @@ class Reader:
         else:
             image_url = (
                 r"https://gitee.com/api/v5/repos/"
-                + self.config.get("Gitee", "owner")
+                + self.config["Gitee"]["owner"]
                 + "/contents/"
-                + self.config.get("Gitee", "path")
+                + self.config["Gitee"]["path"]
                 + "/"
                 + path
             )
@@ -641,7 +637,9 @@ def chat_paper_main(args):
 
 def add_subcommand(parser):
     name = "paper"
-    subparser = parser.add_parser(name)
+    subparser = parser.add_parser(
+        name, help="Fetch or Summary paper from local or arxiv"
+    )
     subparser.add_argument(
         "--pdf-path",
         type=str,

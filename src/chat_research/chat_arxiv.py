@@ -556,7 +556,7 @@ def chat_arxiv_main(args):
 
 def add_subcommnd(parser):
     name = "arxiv"
-    subparser = parser.add_parser(name)
+    subparser = parser.add_parser(name, help="Fetch and summary paper from arxiv")
     subparser.add_argument(
         "--query",
         type=str,

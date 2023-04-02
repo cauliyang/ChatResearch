@@ -257,7 +257,7 @@ def chat_reviewer_main(args):
 
 def add_subcommand(parser):
     name = "reviewer"
-    subparser = parser.add_parser(name)
+    subparser = parser.add_parser(name, help="Summary paper")
     subparser.add_argument(
         "--paper-path",
         type=str,

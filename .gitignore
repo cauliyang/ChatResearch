@@ -137,8 +137,8 @@ private.md
 
 
 backup/
-chataca.toml
 .DS*
 *.ini
 pdf_files
 export
+apikey.toml
