@@ -55,7 +55,7 @@ $pip install chat-research
 
 ## Usage
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/help.gif" width="400" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/help.gif" width="800" height="400">
 
 ```console
 > chatre -h
