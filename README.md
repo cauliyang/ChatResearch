@@ -8,7 +8,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://github.com/charliermarsh/ruff)
 
 [pypi status]: https://pypi.org/project/chat-research
-[license]: https://opensource.org/licenses/MIT
+[license]: https://opensource.org/licenses/mit
 [precommit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
