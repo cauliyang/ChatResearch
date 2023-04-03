@@ -7,19 +7,21 @@
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://github.com/charliermarsh/ruff)
 
-[pypi status]: https://pypi.org/project/chat-research/
-[license]: https://opensource.org/licenses/GPLv3
+[pypi status]: https://pypi.org/project/chat-research
+[license]: https://opensource.org/licenses/MIT
 [precommit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
-ChatResearch is a Python package that uses OpenAI's GPT-3 to accelerate research. It provides several features such as generating summary papers, fetching and summarizing papers from arxiv and bioarxiv, generating responses for review comments, and more.
+ChatResearch is a tool that uses OpenAI's GPT-3 to accelerate your research.
+It provides several features such as generating summary papers, fetching and summarizing papers from arxiv and bioarxiv, generating responses for review comments, and more.
 
 ## Why ChatResearch?
 
-Numerous projects and research endeavors have been undertaken in the realm of
-ChatGPT, yet none have met my specific requirements. As a result, I have resolved to
-create my own project, tailored to my personal preferences. I shall persist in
-refining and enhancing this project. Please do not hesitate to leave a star, and I am grateful for your support and ratings
+Numerous projects and research endeavors have been undertaken in the realm of ChatGPT, yet none have met my specific requirements.
+As a result, I have resolved to
+create my own project, tailored to my personal preferences.
+I shall persist in refining and enhancing this project.
+Please do not hesitate to leave a star, and I am grateful for your support and ratings.
 I welcome any suggestions, proposals, and pull requests.
 
 ## TODO
