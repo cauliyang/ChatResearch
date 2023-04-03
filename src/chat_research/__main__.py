@@ -80,7 +80,7 @@ def cli():
     if args.log_level.upper() == "INFO":
         logger.add(
             sys.stdout,
-            format="'<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>",
+            format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>",
             level=args.log_level.upper(),
         )
     else:
