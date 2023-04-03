@@ -4,7 +4,14 @@ from typing import Any, Optional
 
 from loguru import logger
 
-from . import chat_arxiv, chat_config, chat_paper, chat_response, chat_reviewer
+from . import (
+    chat_arxiv,
+    chat_biorxiv,
+    chat_config,
+    chat_paper,
+    chat_response,
+    chat_reviewer,
+)
 
 
 class RichArgParser(argparse.ArgumentParser):
@@ -62,6 +69,7 @@ def cli():
     chat_response_command = chat_response.add_subcommand(subparser)
     chat_paper_command = chat_paper.add_subcommand(subparser)
     chat_config_command = chat_config.add_subcommand(subparser)
+    chat_biorxiv_command = chat_biorxiv.add_subcommand(subparser)
     args = parser.parse_args()
 
     if not args.subcommand:
@@ -78,6 +86,8 @@ def cli():
         chat_reviewer.cli(args)
     elif args.subcommand == chat_config_command:
         chat_config.cli(args)
+    elif args.subcommand == chat_biorxiv_command:
+        chat_biorxiv.cli(args)
     else:
         logger.error("Invalid subcommand")
         parser.print_help()

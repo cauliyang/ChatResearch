@@ -232,31 +232,6 @@ class Reviewer:
             f.write(text)
 
 
-def main(args):
-    reviewer1 = Reviewer(args=args)
-    # 开始判断是路径还是文件：
-    paper_list = []
-
-    if args.paper_path.endswith(".pdf"):
-        paper_list.append(Paper(path=args.paper_path))
-    else:
-        for root, dirs, files in os.walk(args.paper_path):
-            logger.info(f"root: {root}, dirs: {dirs}, files: {files}")
-            for filename in files:
-                # 如果找到PDF文件，则将其复制到目标文件夹中
-                if filename.endswith(".pdf"):
-                    paper_list.append(Paper(path=os.path.join(root, filename)))
-    logger.info(
-        "------------------paper_num: {}------------------".format(len(paper_list))
-    )
-
-    for paper_index, paper_name in enumerate(paper_list):
-        paper = paper_name.path.split("\\")[-1]
-        logger.info(f"{paper_index}, {paper}")
-
-    reviewer1.review_by_chatgpt(paper_list=paper_list)
-
-
 def add_subcommand(parser):
     name = "reviewer"
     subparser = parser.add_parser(name, help="Summary paper")
@@ -298,6 +273,31 @@ def add_subcommand(parser):
     )
 
     return name
+
+
+def main(args):
+    reviewer1 = Reviewer(args=args)
+    # 开始判断是路径还是文件：
+    paper_list = []
+
+    if args.paper_path.endswith(".pdf"):
+        paper_list.append(Paper(path=args.paper_path))
+    else:
+        for root, dirs, files in os.walk(args.paper_path):
+            logger.info(f"root: {root}, dirs: {dirs}, files: {files}")
+            for filename in files:
+                # 如果找到PDF文件，则将其复制到目标文件夹中
+                if filename.endswith(".pdf"):
+                    paper_list.append(Paper(path=os.path.join(root, filename)))
+    logger.info(
+        "------------------paper_num: {}------------------".format(len(paper_list))
+    )
+
+    for paper_index, paper_name in enumerate(paper_list):
+        paper = paper_name.path.split("\\")[-1]
+        logger.info(f"{paper_index}, {paper}")
+
+    reviewer1.review_by_chatgpt(paper_list=paper_list)
 
 
 def cli(args):

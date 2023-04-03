@@ -1,227 +1,35 @@
 import base64
 import datetime
-import os
 import re
 from pathlib import Path
 
-import arxiv
 import openai
 import requests
 import tenacity
 import tiktoken
 from loguru import logger
-from pydantic import BaseModel, validator
 
-from .paper_with_image import Paper
 from .utils import load_config, report_token_usage
 
 
-class PaperParams(BaseModel):
-    pdf_path: str
-    query: str
-    key_word: str
-    filter_keys: str
-    max_results: int
-    sort: str
-    save_image: bool
-    file_format: str
-    language: str
-
-    @validator("pdf_path")
-    def pdf_path_must_exist(cls, v):
-        if not Path(v).exists():
-            raise ValueError("pdf_path must exist")
-        return v
-
-
-# 定义Reader类
-class Reader:
-    # 初始化方法，设置属性
+class BaseReader:
     def __init__(
-        self,
-        key_word,
-        query,
-        filter_keys,
-        root_path=".",
-        sort=arxiv.SortCriterion.SubmittedDate,
-        user_name="defualt",
-        args=None,
+        self, category, filter_keys, root_path, language, file_format, save_image
     ):
-        self.user_name = user_name  # 读者姓名
-        self.key_word = key_word  # 读者感兴趣的关键词
-        self.query = query  # 读者输入的搜索查询
-        self.sort = sort  # 读者选择的排序方式
-
-        if args is None:
-            raise ValueError("args is None")
-
-        if args.language == "en":
-            self.language = "English"
-        elif args.language == "zh":
-            self.language = "Chinese"
-        else:
-            self.language = "English"
-
-        self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
         self.root_path = Path(root_path)
+        self.language = language
+        self.file_format = file_format
+
+        self.category = category  # 读者选择的类别
+        self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
 
         self.config, self.chat_api_list = load_config()
         self.cur_api = 0
 
-        self.file_format = args.file_format
-
-        self.gitee_key = self.config["Gitee"]["api"] if args.save_image else ""
+        self.gitee_key = self.config["Gitee"]["api"] if save_image else ""
 
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
-
-    def get_arxiv(self, max_results=30):
-        search = arxiv.Search(
-            query=self.query,
-            max_results=max_results,
-            sort_by=self.sort,
-            sort_order=arxiv.SortOrder.Descending,
-        )
-        return search
-
-    def filter_arxiv(self, max_results=30):
-        search = self.get_arxiv(max_results=max_results)
-        logger.info("all search:")
-        for index, result in enumerate(search.results()):
-            logger.info(f"{index=}, {result.title=}, {result.updated}")
-
-        filter_results = []
-        filter_keys = self.filter_keys
-
-        logger.info(f"filter_keys {self.filter_keys}")
-        # 确保每个关键词都能在摘要中找到，才算是目标论文
-        for index, result in enumerate(search.results()):
-            abs_text = result.summary.replace("-\n", "-").replace("\n", " ")
-            meet_num = 0
-            for f_key in filter_keys.split(" "):
-                if f_key.lower() in abs_text.lower():
-                    meet_num += 1
-            if meet_num == len(filter_keys.split(" ")):
-                filter_results.append(result)
-                # break
-        logger.info(f"filter_results: {len(filter_results)}")
-        logger.info("filter_papers:")
-        for index, result in enumerate(filter_results):
-            logger.info(f"{index=}, {result.title=}, {result.updated}")
-        return filter_results
-
-    def validateTitle(self, title):
-        # 将论文的乱七八糟的路径格式修正
-        rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
-        new_title = re.sub(rstr, "_", title)  # 替换为下划线
-        return new_title
-
-    def download_pdf(self, filter_results):
-        # 先创建文件夹
-        date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
-
-        query_str = (
-            self.query.replace("au:", "")
-            .replace("title: ", "")
-            .replace("ti: ", "")
-            .replace(":", " ")[:25]
-        )
-
-        path = self.root_path / "pdf_files" / f"{query_str}-{date_str}"
-        path.mkdir(parents=True, exist_ok=True)
-
-        logger.info(f"All_paper: {len(filter_results)}")
-        # 开始下载：
-        paper_list = []
-
-        for r_index, result in enumerate(filter_results):
-            try:
-                title_str = self.validateTitle(result.title)
-                pdf_name = title_str + ".pdf"
-                # result.download_pdf(path, filename=pdf_name)
-                self.try_download_pdf(result, path.as_posix(), pdf_name)
-
-                paper_path = path / pdf_name
-
-                logger.info(f"{paper_path=}")
-
-                paper = Paper(
-                    path=paper_path,
-                    url=result.entry_id,
-                    title=result.title,
-                    abs=result.summary.replace("-\n", "-").replace("\n", " "),
-                    authers=[str(aut) for aut in result.authors],
-                )
-
-                paper_list.append(paper)
-            except Exception as e:
-                logger.warning(f"download_error: {e}")
-                pass
-        return paper_list
-
-    @tenacity.retry(
-        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-        stop=tenacity.stop_after_attempt(5),
-        reraise=True,
-    )
-    def try_download_pdf(self, result, path, pdf_name):
-        result.download_pdf(path, filename=pdf_name)
-
-    @tenacity.retry(
-        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-        stop=tenacity.stop_after_attempt(5),
-        reraise=True,
-    )
-    def upload_gitee(self, image_path, image_name="", ext="png"):
-        """
-        上传到码云
-        :return:
-        """
-        with open(image_path, "rb") as f:
-            base64_data = base64.b64encode(f.read())
-            base64_content = base64_data.decode()
-
-        date_str = (
-            str(datetime.datetime.now())[:19].replace(":", "-").replace(" ", "-")
-            + "."
-            + ext
-        )
-        path = image_name + "-" + date_str
-
-        payload = {
-            "access_token": self.gitee_key,
-            "owner": self.config["Gitee"]["owner"],
-            "repo": self.config["Gitee"]["repo"],
-            "path": self.config["Gitee"]["path"],
-            "content": base64_content,
-            "message": "upload image",
-        }
-        # 这里需要修改成你的gitee的账户和仓库名，以及文件夹的名字：
-        url = (
-            "https://gitee.com/api/v5/repos/"
-            + self.config["Gitee"]["owner"]
-            + "/"
-            + self.config["Gitee"]["repo"]
-            + "/contents/"
-            + self.config["Gitee"]["path"]
-            + "/"
-            + path
-        )
-        rep = requests.post(url, json=payload).json()
-        logger.info(f"{rep=}")
-        if "content" in rep.keys():
-            image_url = rep["content"]["download_url"]
-        else:
-            image_url = (
-                r"https://gitee.com/api/v5/repos/"
-                + self.config["Gitee"]["owner"]
-                + "/contents/"
-                + self.config["Gitee"]["path"]
-                + "/"
-                + path
-            )
-
-        return image_url
 
     def summary_with_chat(self, paper_list):
         htmls = []
@@ -235,6 +43,7 @@ class Reader:
             # intro
             text += list(paper.section_text_dict.values())[0]
             chat_summary_text = ""
+
             try:
                 chat_summary_text = self.chat_summary(text=text)
             except Exception as e:
@@ -382,12 +191,11 @@ class Reader:
         )
         clip_text = text[:clip_text_index]
 
+        key_words = ",".join(self.category)
         messages = [
             {
                 "role": "system",
-                "content": "You are a reviewer in the field of ["
-                + self.key_word
-                + "] and you need to critically review this article",
+                "content": f"You are a reviewer in the field of [{key_words}] and you need to critically review this article",
             },
             # chatgpt 角色
             {
@@ -444,12 +252,12 @@ class Reader:
             len(text) * (self.max_token_num - method_prompt_token) / text_token
         )
         clip_text = text[:clip_text_index]
+
+        key_words = ",".join(self.category)
         messages = [
             {
                 "role": "system",
-                "content": "You are a researcher in the field of ["
-                + self.key_word
-                + "] who is good at summarizing papers using concise statements",
+                "content": f"You are a researcher in the field of [{key_words}] who is good at summarizing papers using concise statements",
             },
             # chatgpt 角色
             {
@@ -507,12 +315,12 @@ class Reader:
             len(text) * (self.max_token_num - summary_prompt_token) / text_token
         )
         clip_text = text[:clip_text_index]
+
+        key_words = ",".join(self.category)
         messages = [
             {
                 "role": "system",
-                "content": "You are a researcher in the field of ["
-                + self.key_word
-                + "] who is good at summarizing papers using concise statements",
+                "content": f"You are a researcher in the field of [{key_words}]  who is good at summarizing papers using concise statements",
             },
             {
                 "role": "assistant",
@@ -575,145 +383,64 @@ class Reader:
 
             # 定义一个方法，打印出读者信息
 
-    def show_info(self):
-        logger.info(f"Key word: {self.key_word}")
-        logger.info(f"Query: {self.query}")
-        logger.info(f"Sort: {self.sort}")
+    def validateTitle(self, title):
+        # 将论文的乱七八糟的路径格式修正
+        rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
+        new_title = re.sub(rstr, "_", title)  # 替换为下划线
+        return new_title
 
-
-def add_subcommand(parser):
-    name = "paper"
-    subparser = parser.add_parser(
-        name, help="Fetch or Summary paper from local or arxiv"
+    @tenacity.retry(
+        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
+        stop=tenacity.stop_after_attempt(5),
+        reraise=True,
     )
-    subparser.add_argument(
-        "--pdf-path",
-        type=str,
-        default="",
-        metavar="",
-        help="if none, the bot will download from arxiv with query",
-    )
+    def upload_gitee(self, image_path, image_name="", ext="png"):
+        """
+        上传到码云
+        :return:
+        """
+        with open(image_path, "rb") as f:
+            base64_data = base64.b64encode(f.read())
+            base64_content = base64_data.decode()
 
-    subparser.add_argument(
-        "--query",
-        type=str,
-        default="all: ChatGPT robot",
-        metavar="",
-        help="the query string, ti: xx, au: xx, all: xx (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--key-word",
-        type=str,
-        default="reinforcement learning",
-        metavar="",
-        help="the key word of user research fields (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--filter-keys",
-        type=str,
-        default="ChatGPT robot",
-        metavar="",
-        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--max-results",
-        type=int,
-        default=1,
-        metavar="",
-        help="the maximum number of results (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--sort",
-        type=str,
-        default="Relevance",
-        metavar="",
-        help="another is LastUpdatedDate (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--save-image",
-        default=False,
-        metavar="",
-        help="save image? It takes a minute or two to save a picture! But pretty (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--file-format",
-        type=str,
-        default="md",
-        metavar="",
-        help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--language",
-        type=str,
-        default="en",
-        metavar="",
-        help="The other output lauguage is English, is en (default: %(default)s)",
-    )
-
-    return name
-
-
-def main(args):
-    # 创建一个Reader对象，并调用show_info方法
-    if args.sort == "Relevance":
-        sort = arxiv.SortCriterion.Relevance
-    elif args.sort == "LastUpdatedDate":
-        sort = arxiv.SortCriterion.LastUpdatedDate
-    else:
-        sort = arxiv.SortCriterion.Relevance
-
-    if args.pdf_path:
-        reader1 = Reader(
-            key_word=args.key_word,
-            query=args.query,
-            filter_keys=args.filter_keys,
-            sort=sort,
-            args=args,
+        date_str = (
+            str(datetime.datetime.now())[:19].replace(":", "-").replace(" ", "-")
+            + "."
+            + ext
         )
-        reader1.show_info()
-        # 开始判断是路径还是文件：
-        paper_list = []
-        if args.pdf_path.endswith(".pdf"):
-            paper_list.append(Paper(path=args.pdf_path))
-            logger.info(f"read pdf file {args.pdf_path}")
+        path = image_name + "-" + date_str
+
+        payload = {
+            "access_token": self.gitee_key,
+            "owner": self.config["Gitee"]["owner"],
+            "repo": self.config["Gitee"]["repo"],
+            "path": self.config["Gitee"]["path"],
+            "content": base64_content,
+            "message": "upload image",
+        }
+        # 这里需要修改成你的gitee的账户和仓库名，以及文件夹的名字：
+        url = (
+            "https://gitee.com/api/v5/repos/"
+            + self.config["Gitee"]["owner"]
+            + "/"
+            + self.config["Gitee"]["repo"]
+            + "/contents/"
+            + self.config["Gitee"]["path"]
+            + "/"
+            + path
+        )
+        rep = requests.post(url, json=payload).json()
+        logger.info(f"{rep=}")
+        if "content" in rep.keys():
+            image_url = rep["content"]["download_url"]
         else:
-            for root, dirs, files in os.walk(args.pdf_path):
-                logger.info(f"root: {root}, dirs: {dirs}, files: {files}")
-                for filename in files:
-                    # 如果找到PDF文件，则将其复制到目标文件夹中
-                    if filename.endswith(".pdf"):
-                        paper_list.append(Paper(path=os.path.join(root, filename)))
-                        logger.info(f"read pdf file {args.pdf_path}")
+            image_url = (
+                r"https://gitee.com/api/v5/repos/"
+                + self.config["Gitee"]["owner"]
+                + "/contents/"
+                + self.config["Gitee"]["path"]
+                + "/"
+                + path
+            )
 
-        logger.info(
-            "------------------paper_num: {}------------------".format(len(paper_list))
-        )
-        for paper_index, paper_name in enumerate(paper_list):
-            name = paper_name.path.split("\\")[-1]
-            logger.info(f"{paper_index=}, {name=}")
-
-        reader1.summary_with_chat(paper_list=paper_list)
-    else:
-        reader1 = Reader(
-            key_word=args.key_word,
-            query=args.query,
-            filter_keys=args.filter_keys,
-            sort=sort,
-            args=args,
-        )
-        reader1.show_info()
-        filter_results = reader1.filter_arxiv(max_results=args.max_results)
-        paper_list = reader1.download_pdf(filter_results)
-        reader1.summary_with_chat(paper_list=paper_list)
-
-
-def cli(args):
-    parameters = PaperParams(**vars(args))
-    main(parameters)
+        return image_url

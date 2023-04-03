@@ -147,11 +147,6 @@ class Response:
             f.write(text)
 
 
-def main(args):
-    Response1 = Response(args=args)
-    Response1.response_by_chatgpt(comment_path=args.comment_path)
-
-
 def add_subcommand(parser):
     name = "response"
     subparser = parser.add_parser(name, help="Generate reponse for review comment")
@@ -178,6 +173,11 @@ def add_subcommand(parser):
     )
 
     return name
+
+
+def main(args):
+    Response1 = Response(args=args)
+    Response1.response_by_chatgpt(comment_path=args.comment_path)
 
 
 def cli(args):

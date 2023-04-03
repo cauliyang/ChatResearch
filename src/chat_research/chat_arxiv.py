@@ -544,16 +544,6 @@ class Reader:
         logger.info(f"Sort: {self.sort}")
 
 
-def main(args):
-    reader1 = Reader(key_word=args.key_word, query=args.query, args=args)
-    reader1.show_info()
-    paper_list = reader1.get_arxiv_web(
-        args=args, page_num=args.page_num, days=args.days
-    )
-
-    reader1.summary_with_chat(paper_list=paper_list)
-
-
 def add_subcommnd(parser):
     name = "arxiv"
     subparser = parser.add_parser(name, help="Fetch and summary paper from arxiv")
@@ -615,6 +605,16 @@ def add_subcommnd(parser):
     )
 
     return name
+
+
+def main(args):
+    reader1 = Reader(key_word=args.key_word, query=args.query, args=args)
+    reader1.show_info()
+    paper_list = reader1.get_arxiv_web(
+        args=args, page_num=args.page_num, days=args.days
+    )
+
+    reader1.summary_with_chat(paper_list=paper_list)
 
 
 def cli(args):

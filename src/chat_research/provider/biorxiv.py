@@ -4,21 +4,21 @@ import re
 import time
 from calendar import timegm
 from datetime import datetime, timezone
-from enum import Enum, StrEnum, auto
+from enum import Enum, auto
 from typing import Any, Generator, Optional
 from urllib.request import urlretrieve
 
 import feedparser
 import requests
 import tenacity
-from furl import furl
+from loguru import logger
 from lxml import etree
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 _DEFAULT_TIME = datetime.min
 
 
-class Category(StrEnum):
+class Category(Enum):
     AnimalBeHaviorAndCognition = auto()
     Biochemistry = auto()
     Bioengineering = auto()
@@ -106,26 +106,7 @@ class Category(StrEnum):
             return cls.Unknown
 
 
-"""
-# {"messages":[{"status":"ok"}], "collection":[{
-            "doi":"10.1101\/2023.03.30.534996",
-            "title":"Identification of Iron Deficiency-Induced Chlorosis Tolerant Lines from Wild Rice Germplasm",
-            "authors":"kumar, r.",
-            "author_corresponding":"rahul kumar",
-            "author_corresponding_institution":"University of Connecticut",
-            "date":"2023-04-02",
-            "version":"1",
-            "type":"new results",
-            "license":"cc_no",
-            "category":"plant biology",
-            "jatsxml":"https:\/\/www.biorxiv.org\/content\/early\/2023\/04\/02\/2023.03.30.534996.source.xml",
-            "abstract":"The cultivation of transplanted rice has led to depletion of groundwater levels in many parts of the world. Direct-seeded rice under aerobic conditions is an alternative production technology that requires much less water. However, under aerobic conditions, iron in the soil is oxidized from ferric to ferrous, which is not easily available for rice, resulting in iron deficiency-induced chlorosis (IDIC) and a drastic reduction in seed yield. Cultivated rice genotypes have limited variations for IDIC tolerance, therefore, wild Oryza germplasm could be a better source for IDIC tolerance. In this study, 313 Oryza accessions were evaluated for IDIC tolerance at the tillering stage under aerobic conditions using IDIC rating, SPAD value, and iron content in leaves. Based on these parameters, twenty IDIC tolerant lines were selected. These 20 lines exhibited no chlorosis, high SPAD values, and iron content, while 8 cultivated controls showed mild to high chlorosis symptoms and low SPAD and iron content. In a subsequent year, the selected lines were evaluated again to confirm their tolerance, and they exhibited similar levels of tolerance. These accessions may be useful for developing IDIC-tolerant cultivars for aerobic rice cultivation, and future study to understand the molecular mechanism of IDIC tolerance in rice.",
-            "published":"NA",
-            "server":"biorxiv"},}
-"""
-
-
-class Result(BaseModel):
+class Result:
     """
         An entry in an bioarXiv query results feed.
 
@@ -140,33 +121,50 @@ class Result(BaseModel):
 
     """
 
-    doi: furl
-    title: str
-    authors: str
-    author_corresponding: str
-    author_corresponding_institution: str
-    date: time.struct_time = _DEFAULT_TIME
-    version: int
-    category: Category
-    jats_xml_path: furl
-    abstract: str
-    published: str
-    server: str
-    pdf_url: furl = None
-    entry_id: furl = None
+    def __init__(
+        self,
+        doi: str,
+        title: str,
+        authors: str,
+        author_corresponding: str,
+        author_corresponding_institution: str,
+        version: int,
+        category: Category,
+        jats_xml_path: str,
+        abstract: str,
+        published: str,
+        server: str,
+        pdf_url: Optional[str] = None,
+        entry_id: Optional[str] = None,
+        date: datetime = _DEFAULT_TIME,
+    ):
+        self.doi = Result.validate_doi(doi)
+        self.title = title
+        self.authors = authors
+        self.author_corresponding = author_corresponding
+        self.author_corresponding_institution = author_corresponding_institution
+        self.version = version
+        self.category = category
+        self.jats_xml_path = Result.validate_jats_xml(jats_xml_path)
+        self.abstract = abstract
+        self.published = published
+        self.server = server
+        self.pdf_url = pdf_url
+        self.entry_id = entry_id
+        self.date = Result.validate_date(date)
 
-    @validator("doi")
-    def validate_doi(cls, doi):
+    @staticmethod
+    def validate_doi(doi):
         """Validate a DOI."""
-        return furl(doi.replace("\\", ""))
+        return doi.replace("\\", "")
 
-    @validator("jats_xml")
-    def validate_jats_xml(cls, jats_xml):
+    @staticmethod
+    def validate_jats_xml(jats_xml):
         """Validate a JATS XML URL."""
-        return furl(jats_xml.replace("\\", ""))
+        return jats_xml.replace("\\", "")
 
-    @validator("date")
-    def validate_date(cls, date):
+    @staticmethod
+    def validate_date(date):
         """Validate a date."""
         return Result._to_datetime(time.strptime(date, "%Y-%m-%d"))
 
@@ -237,19 +235,18 @@ class Result(BaseModel):
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def get_pdf_url(self) -> furl:
-        content_base = furl("https://www.biorxiv.org/content")
-        doi_base = furl("https://doi.org")
-        self.entry_id = doi_base / self.doi.tostr()
+    def get_pdf_url(self) -> str:
+        content_base = "https://www.biorxiv.org"
+        doi_base = "https://doi.org"
+        self.entry_id = f"{doi_base}/{self.doi}"
 
         response = requests.get(self.entry_id)
         tree = etree.HTML(response.content)
-        return (
-            content_base
-            / tree.xpath(
-                '//*[@id="mini-panel-biorxiv_art_tools"]/div/div[1]/div/div/div[1]/div/a/@href'
-            )[0]
-        )
+        content_path = tree.xpath(
+            '//*[@id="mini-panel-biorxiv_art_tools"]/div/div[1]/div/div/div[1]/div/a/@href'
+        )[0]
+
+        return f"{content_base}/{content_path}"
 
     def _get_default_filename(self, extension: str = "pdf") -> str:
         """
@@ -271,6 +268,7 @@ class Result(BaseModel):
 
         path = os.path.join(dirpath, filename)
         self.pdf_url = self.get_pdf_url()
+        logger.info(f"Downloading PDF from {self.pdf_url}")
 
         written_path, _ = urlretrieve(self.pdf_url, path)
 
@@ -393,7 +391,7 @@ class Client(BaseModel):
     _last_request_dt: datetime
     """
 
-    biorxiv_api: furl = furl("https://api.biorxiv.org/details/biorxiv")
+    biorxiv_api: str = "https://api.biorxiv.org/details/biorxiv"
     delay_seconds: int = 3
     num_retries: int = 3
     _last_request_dt: Optional[datetime] = None
@@ -404,7 +402,7 @@ class Client(BaseModel):
             self.num_retries,
         )
 
-    def results(self, search: Search, offset: int = 0) -> Generator[Result]:
+    def results(self, search: Search, offset: int = 0) -> Generator[Result, None, None]:
         """
         Uses this client configuration to fetch one page of the search results
         at a time, yielding the parsed `Result`s, until `max_results` results
@@ -437,8 +435,7 @@ class Client(BaseModel):
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    @staticmethod
-    def _request(url) -> dict[str, Any]:
+    def _request(self, url) -> dict[str, Any]:
         response = requests.get(url)
         response.raise_for_status()
         content = response.content.strip().decode()
@@ -452,9 +449,9 @@ class Client(BaseModel):
         """
 
         return (
-            self.biorxiv_api / f"{search.days}"
+            f"{self.biorxiv_api}/{search.days}d"
             if search.days is not None
-            else self.biorxiv_api / f"{search.start_date}" / f"{search.end_date}"
+            else f"{self.biorxiv_api}/{search.start_date}/{search.end_date}"
         )
 
 
