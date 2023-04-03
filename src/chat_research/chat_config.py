@@ -1,6 +1,8 @@
 import toml
 from loguru import logger
 
+from .utils import CONFIG_FILE_NAME
+
 
 def create_config_file():
     config = {
@@ -12,13 +14,13 @@ def create_config_file():
             "path": "files_name_in_your_repo",
         },
     }
-    with open("apikey.toml", "w") as f:
+    with open(CONFIG_FILE_NAME, "w") as f:
         toml.dump(config, f)
 
 
 def add_subcommand(parse):
     name = "config"
-    _ = parse.add_parser(name, help="config your apikey")
+    _ = parse.add_parser(name, help="Generate configuration file")
     return name
 
 

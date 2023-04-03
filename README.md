@@ -31,14 +31,14 @@ I welcome any suggestions, proposals, and pull requests.
 - [ ] Format PDF output
 - [ ] Support output latex
 - [ ] Tune prompt to support latex
-- [ ] Finetune prompt
+- [ ] Fine-tune prompt
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
-- [ ] Add Token Usage Summary
+- [ ] Add gif
 
 ## Features
 
-- Chat Config: Generate `apikey.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
+- Chat Config: Generate `chatre.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
 - Chat Reviewer: Generate summary paper with specified research fields and language.
 - Chat Arxiv: Fetch and summary paper from arxiv with specified query and language.
 - Chat Response: Generate response for review comment with specified language.
@@ -73,7 +73,7 @@ subcommand:
     arxiv                                 Fetch and summary paper from arxiv
     response                              Generate reponse for review comment
     paper                                 Fetch or Summary paper from local or arxiv
-    config                                config your apikey
+    config                                Generate configuration file
     biorxiv                               Fetch and Summary paper from bioarxiv
 
 ```
