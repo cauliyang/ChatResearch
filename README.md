@@ -18,12 +18,22 @@ The project includes several chatbot models and evaluation metrics.
 
 ## TODO
 
-- [ ] multi thread
+- [ ] multi thread support
+
+## Features
+
+- Chat Config: Generate `apikey.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
+- Chat Reviewer: Generate summary paper with specified research fields and language.
+- Chat Arxiv: Fetch and summary paper from arxiv with specified query and language.
+- Chat Response: Generate response for review comment with specified language.
+- Chat Paper: Fetch or summary paper from local or arxiv with specified query, research fields, and language.
+- Chat Biorxiv: Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
 
 ## Installation
 
-1. Clone the repository
-2. Install the required packages: `pip install -r requirements.txt`
+```console
+$pip install chat-research
+```
 
 ## Usage
 
@@ -169,11 +179,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contributors
 
 - Yangyang Li
-
-```
-
-```
-
-```
-
-```
