@@ -565,16 +565,6 @@ class Reader:
 
         return result
 
-    def export_to_markdown(self, text, file_name, mode="w"):
-        # 使用markdown模块的convert方法，将文本转换为html格式
-        # html = markdown.markdown(text)
-        # 打开一个文件，以写入模式
-        with open(file_name, mode, encoding="utf-8") as f:
-            # 将html格式的内容写入文件
-            f.write(text)
-
-            # 定义一个方法，打印出读者信息
-
     def show_info(self):
         logger.info(f"Key word: {self.key_word}")
         logger.info(f"Query: {self.query}")
@@ -645,6 +635,7 @@ def add_subcommand(parser):
         "--file-format",
         type=str,
         default="md",
+        choices=["md", "txt", "pdf"],
         metavar="",
         help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
     )

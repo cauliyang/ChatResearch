@@ -42,7 +42,7 @@ class Paper:
         self.text_list = [page.get_text() for page in self.pdf]
         self.all_text = " ".join(self.text_list)
         self.section_page_dict = self._get_all_page_index()  # 段落与页码的对应字典
-        logger.info(f"section_page_dict {self.section_page_dict}")
+        logger.trace(f"section_page_dict {self.section_page_dict}")
         self.section_text_dict = self._get_all_page()  # 段落与内容的对应字典
         self.section_text_dict.update({"title": self.title})
         self.section_text_dict.update({"paper_info": self.get_paper_info()})
@@ -262,7 +262,7 @@ class Paper:
         # 再处理其他章节：
         text_list = [page.get_text() for page in self.pdf]
         for sec_index, sec_name in enumerate(self.section_page_dict):
-            logger.info(
+            logger.trace(
                 f"{sec_index=}, {sec_name=}, {self.section_page_dict[sec_name]}"
             )
             if sec_index <= 0 and self.abs:
@@ -276,7 +276,7 @@ class Paper:
                     ]
                 else:
                     end_page = len(text_list)
-                logger.info(f"{start_page=}, {end_page=}")
+                logger.trace(f"{start_page=}, {end_page=}")
                 cur_sec_text = ""
                 if end_page - start_page == 0:
                     if sec_index < len(list(self.section_page_dict.keys())) - 1:

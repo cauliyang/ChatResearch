@@ -6,7 +6,7 @@ import warnings
 from calendar import timegm
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Dict, Generator, List
+from typing import Dict, Generator, List, Optional
 from urllib.parse import urlencode
 from urllib.request import urlretrieve
 
@@ -510,7 +510,7 @@ class Client(object):
     """Number of seconds to wait between API requests."""
     num_retries: int
     """Number of times to retry a failing API request."""
-    _last_request_dt: datetime
+    _last_request_dt: Optional[datetime]
 
     def __init__(
         self, page_size: int = 100, delay_seconds: int = 3, num_retries: int = 3

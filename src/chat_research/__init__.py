@@ -4,8 +4,8 @@ __PACKAGE_NAME__ = "chat-research"
 
 from rich.traceback import install
 
-from . import paper, paper_with_image
+from . import paper, paper_with_image, utils
 
 install()
 
-__all__ = ["paper", "paper_with_image"]
+__all__ = ["paper", "paper_with_image", "utils"]

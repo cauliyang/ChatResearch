@@ -51,17 +51,19 @@ def cli():
         formatter_class=RichHelpFormatter,
     )
 
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        default="info",
+        choices=["debug", "info", "trace"],
+        metavar="[debug, info, trace]",
+        help="The log level (default: %(default)s)",
+    )
+
     subparser = parser.add_subparsers(
         title="subcommand",
         description="valid subcommand",
         dest="subcommand",
-    )
-
-    logger.remove()
-    logger.add(
-        sys.stdout,
-        format="'<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>",
-        level="INFO",
     )
 
     chat_reviewer_command = chat_reviewer.add_subcommand(subparser)
@@ -71,6 +73,22 @@ def cli():
     chat_config_command = chat_config.add_subcommand(subparser)
     chat_biorxiv_command = chat_biorxiv.add_subcommand(subparser)
     args = parser.parse_args()
+
+    debug_format = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+    logger.remove()
+
+    if args.log_level == "INFO":
+        logger.add(
+            sys.stdout,
+            format="'<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>",
+            level=args.log_level.upper(),
+        )
+    else:
+        logger.add(
+            sys.stdout,
+            format=debug_format,
+            level=args.log_level.upper(),
+        )
 
     if not args.subcommand:
         parser.print_help()

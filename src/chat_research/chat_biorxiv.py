@@ -44,7 +44,6 @@ class Reader(BaseReader):
             language = "English"
 
         super().__init__(
-            category,
             filter_keys,
             root_path,
             language,
@@ -55,6 +54,7 @@ class Reader(BaseReader):
         self.user_name = user_name  # 读者姓名
         self.sort = sort  # 读者选择的排序方式
         self.args = args
+        self.category = category
 
     def get_biorxiv(self, max_results=30):
         if self.args.days is not None:
@@ -125,7 +125,7 @@ class Reader(BaseReader):
                 self.try_download_pdf(result, path.as_posix(), pdf_name)
                 paper_path = path / pdf_name
 
-                logger.info(f"{paper_path=}")
+                logger.trace(f"{paper_path=}")
                 paper = Paper(
                     path=paper_path,
                     url=result.entry_id,
@@ -266,6 +266,7 @@ def add_subcommand(parser):
         "--file-format",
         type=str,
         default="md",
+        choices=["md", "txt", "pdf"],
         metavar="",
         help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
     )
@@ -299,7 +300,11 @@ def main(args):
     reader.show_info()
     filter_results = reader.filter_arxiv(max_results=args.max_results)
     paper_list = reader.download_pdf(filter_results)
-    reader.summary_with_chat(paper_list)
+    key_words = ",".join(reader.category)
+    reader.summary_with_chat(
+        paper_list,
+        key_words,
+    )
 
 
 def cli(args):

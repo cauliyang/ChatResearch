@@ -9,20 +9,17 @@ import tenacity
 import tiktoken
 from loguru import logger
 
+from .export import export
 from .utils import load_config, report_token_usage
 
 
 class BaseReader:
-    def __init__(
-        self, category, filter_keys, root_path, language, file_format, save_image
-    ):
+    def __init__(self, filter_keys, root_path, language, file_format, save_image):
         self.root_path = Path(root_path)
         self.language = language
         self.file_format = file_format
 
-        self.category = category  # 读者选择的类别
         self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
-
         self.config, self.chat_api_list = load_config()
         self.cur_api = 0
 
@@ -31,7 +28,7 @@ class BaseReader:
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
 
-    def summary_with_chat(self, paper_list):
+    def summary_with_chat(self, paper_list, key_words):
         htmls = []
         for paper_index, paper in enumerate(paper_list):
             # 第一步先用title，abs，和introduction进行总结。
@@ -45,7 +42,7 @@ class BaseReader:
             chat_summary_text = ""
 
             try:
-                chat_summary_text = self.chat_summary(text=text)
+                chat_summary_text = self.chat_summary(text=text, key_words=key_words)
             except Exception as e:
                 logger.warning(f"summary_error: {e}")
                 if "maximum context" in str(e):
@@ -59,7 +56,9 @@ class BaseReader:
                     )
                     summary_prompt_token = offset + 1000 + 150
                     chat_summary_text = self.chat_summary(
-                        text=text, summary_prompt_token=summary_prompt_token
+                        text=text,
+                        key_words=key_words,
+                        summary_prompt_token=summary_prompt_token,
                     )
                 else:
                     raise e
@@ -86,7 +85,7 @@ class BaseReader:
                 text = summary_text + "\n\n<Methods>:\n\n" + method_text
                 chat_method_text = ""
                 try:
-                    chat_method_text = self.chat_method(text=text)
+                    chat_method_text = self.chat_method(text=text, key_words=key_words)
                 except Exception as e:
                     logger.info(f"method_error: {e}")
                     if "maximum context" in str(e):
@@ -100,7 +99,9 @@ class BaseReader:
                         )
                         method_prompt_token = offset + 800 + 150
                         chat_method_text = self.chat_method(
-                            text=text, method_prompt_token=method_prompt_token
+                            text=text,
+                            key_words=key_words,
+                            method_prompt_token=method_prompt_token,
                         )
                 htmls.append(chat_method_text)
             else:
@@ -132,7 +133,9 @@ class BaseReader:
 
             chat_conclusion_text = ""
             try:
-                chat_conclusion_text = self.chat_conclusion(text=text)
+                chat_conclusion_text = self.chat_conclusion(
+                    text=text, key_words=key_words
+                )
             except Exception as e:
                 logger.info(f"conclusion_error: {e}")
                 if "maximum context" in str(e):
@@ -146,30 +149,27 @@ class BaseReader:
                     )
                     conclusion_prompt_token = offset + 800 + 150
                     chat_conclusion_text = self.chat_conclusion(
-                        text=text, conclusion_prompt_token=conclusion_prompt_token
+                        text=text,
+                        key_words=key_words,
+                        conclusion_prompt_token=conclusion_prompt_token,
                     )
             htmls.append(chat_conclusion_text)
             htmls.append("\n" * 4)
 
             # # 整合成一个文件，打包保存下来。
             date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
-
             export_path = self.root_path / "export"
 
             if not export_path.exists():
                 export_path.mkdir(parents=True, exist_ok=True)
 
-            mode = "w" if paper_index == 0 else "a"
-
             file_name = (
-                Path(export_path)
-                / f"{date_str}-{self.validateTitle(paper.title[:80])}.{self.file_format}"
+                Path(export_path) / f"{date_str}-{self.validateTitle(paper.title[:80])}"
             )
 
-            self.export_to_markdown(
-                "\n".join([item.strip() for item in htmls]),
-                file_name=file_name,
-                mode=mode,
+            export(
+                content="\n".join([item.strip() for item in htmls]),
+                file_name=file_name.with_suffix(f".{self.file_format}"),
             )
 
             htmls = []
@@ -179,7 +179,7 @@ class BaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def chat_conclusion(self, text, conclusion_prompt_token=800):
+    def chat_conclusion(self, text, key_words, conclusion_prompt_token=800):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -191,7 +191,6 @@ class BaseReader:
         )
         clip_text = text[:clip_text_index]
 
-        key_words = ",".join(self.category)
         messages = [
             {
                 "role": "system",
@@ -241,7 +240,7 @@ class BaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def chat_method(self, text, method_prompt_token=800):
+    def chat_method(self, text, key_words, method_prompt_token=800):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -253,7 +252,6 @@ class BaseReader:
         )
         clip_text = text[:clip_text_index]
 
-        key_words = ",".join(self.category)
         messages = [
             {
                 "role": "system",
@@ -294,7 +292,7 @@ class BaseReader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
-        logger.info(f"method_result:\n{result}")
+        logger.trace(f"method_result:\n{result}")
         report_token_usage(response)
 
         return result
@@ -304,7 +302,7 @@ class BaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def chat_summary(self, text, summary_prompt_token=1100):
+    def chat_summary(self, text, key_words, summary_prompt_token=1100):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -316,7 +314,6 @@ class BaseReader:
         )
         clip_text = text[:clip_text_index]
 
-        key_words = ",".join(self.category)
         messages = [
             {
                 "role": "system",
@@ -367,21 +364,11 @@ class BaseReader:
         for choice in response.choices:
             result += choice.message.content
 
-        logger.info(f"summary_result:\n{result}")
+        logger.trace(f"summary_result:\n{result}")
 
         report_token_usage(response)
 
         return result
-
-    def export_to_markdown(self, text, file_name, mode="w"):
-        # 使用markdown模块的convert方法，将文本转换为html格式
-        # html = markdown.markdown(text)
-        # 打开一个文件，以写入模式
-        with open(file_name, mode, encoding="utf-8") as f:
-            # 将html格式的内容写入文件
-            f.write(text)
-
-            # 定义一个方法，打印出读者信息
 
     def validateTitle(self, title):
         # 将论文的乱七八糟的路径格式修正
