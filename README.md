@@ -34,6 +34,7 @@ I welcome any suggestions, proposals, and pull requests.
 - [ ] Finetune prompt
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
+- [ ] Add Token Usage Summary
 
 ## Features
 
