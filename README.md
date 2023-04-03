@@ -55,7 +55,7 @@ $pip install chat-research
 
 ## Usage
 
-![help.gif](https://github.com/cauliyang/ChatResearch/blob/main//tutorial/help.gif)
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/help.gif" width="400" height="400">
 
 ```console
 > chatre -h
@@ -82,6 +82,8 @@ subcommand:
 ```
 
 ### Chat Config
+
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/config.gif" width="400" height="400">
 
 ```console
 ❯ chatre config
@@ -117,6 +119,8 @@ optional arguments:
 ```
 
 ### Chat Arxiv
+
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/arxiv.gif" width="400" height="400">
 
 ```console
 ❯ chatre arxiv -h
