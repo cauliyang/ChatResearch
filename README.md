@@ -27,8 +27,140 @@ The project includes several chatbot models and evaluation metrics.
 
 ## Usage
 
-1. Run the chatbot models: `python chatbot.py`
-2. Evaluate the chatbot models: `python evaluate.py`
+```console
+> chatre -h                                                                                                                                 (chatpaper)
+usage: chatre [-h] [--log-level ]
+              {reviewer,arxiv,response,paper,config,biorxiv} ...
+
+chatre Use ChatGPT to accelerate research
+
+optional arguments:
+  -h, --help                              show this help message and exit
+  --log-level         The log level (default: info)
+
+subcommand:
+  valid subcommand
+
+  {reviewer,arxiv,response,paper,config,biorxiv}
+    reviewer                              Summary paper
+    arxiv                                 Fetch and summary paper from arxiv
+    response                              Generate reponse for review comment
+    paper                                 Fetch or Summary paper from local or arxiv
+    config                                config your apikey
+    biorxiv                               Fetch and Summary paper from bioarxiv
+
+```
+
+### Chat Config
+
+```console
+❯ chatre config
+```
+
+It will generate `apikey.toml` in current working directory. Otherwise,
+setting environment variable `OPENAI_API_KEY` is another way to config API KEY.
+
+```toml
+[OpenAI]
+OPENAI_API_KEYS = [ "sk-key1", "sk-key2",]
+
+[Gitee]
+api = "your_gitee_api"
+owner = "your_gitee_name"
+repo = "your_repo_name"
+path = "files_name_in_your_repo"
+```
+
+### Chat Reviewer
+
+```console
+> chatre reviewer -h                                                                                                                        (chatpaper)
+usage: chatre reviewer [-h] --paper-path  [--file-format] [--review-format] [--research-fields] [--language]
+
+optional arguments:
+  -h, --help          show this help message and exit
+  --paper-path        path of papers
+  --file-format       output file format (default: txt)
+  --review-format     review format
+  --research-fields   the research fields of paper (default: computer science, artificial intelligence and reinforcement learning)
+  --language          output language, en or zh (default: en)
+```
+
+### Chat Arxiv
+
+```console
+❯ chatre arxiv -h                                                                                                                           (chatpaper)
+usage: chatre arxiv [-h] [--query] [--key-word] [--page-num] [--max-results] [--days] [--sort] [--save-image] [--file-format] [--language]
+
+optional arguments:
+  -h, --help      show this help message and exit
+  --query         the query string, ti: xx, au: xx, all: xx,
+  --key-word      the key word of user research fields
+  --page-num      the maximum number of page
+  --max-results   the maximum number of results
+  --days          the last days of arxiv papers of this query
+  --sort          another is LastUpdatedDate
+  --save-image    save image? It takes a minute or two to save a picture! But pretty
+  --file-format   export file format, if you want to save pictures, md is the best, if not, txt will not be messy
+  --language      The other output lauguage is English, is en
+```
+
+### Chat Response
+
+```console
+❯ chatre response -h                                                                                                                        (chatpaper)
+usage: chatre response [-h] --comment-path  [--file-format] [--language]
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --comment-path   path of comment
+  --file-format    output file format (default: txt)
+  --language       output language, en or zh (default: en)
+
+```
+
+### Chat Paper
+
+```console
+❯ chatre paper -h                                                                                                                           (chatpaper)
+usage: chatre paper [-h] [--pdf-path] [--query] [--key-word] [--filter-keys] [--max-results] [--sort] [--save-image] [--file-format] [--language]
+
+optional arguments:
+  -h, --help      show this help message and exit
+  --pdf-path      if none, the bot will download from arxiv with query
+  --query         the query string, ti: xx, au: xx, all: xx (default: all: ChatGPT robot)
+  --key-word      the key word of user research fields (default: reinforcement learning)
+  --filter-keys   the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper (default: ChatGPT
+                  robot)
+  --max-results   the maximum number of results (default: 1)
+  --sort          another is LastUpdatedDate (default: Relevance)
+  --save-image    save image? It takes a minute or two to save a picture! But pretty (default: False)
+  --file-format   the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: md)
+  --language      The other output lauguage is English, is en (default: en)
+
+```
+
+### Chat Biorxiv
+
+```console
+❯ chatre biorxiv -h                                                                                                                         (chatpaper)
+usage: chatre biorxiv [-h] [--category  [...]] [--date  | --days ] [--server] [--filter-keys  [...]] [--max-results] [--sort] [--save-image]
+                      [--file-format] [--language]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --category  [ ...]    the category of user research fields (default: bioinformatics)
+  --date                the date of user research fields (example 2018-08-21:2018-08-28)
+  --days                the last days of arxiv papers of this query (default: 2)
+  --server              the category of user research fields (default: biorxiv)
+  --filter-keys  [ ...]
+                        the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper
+  --max-results         the maximum number of results (default: 20)
+  --sort                another is LastUpdatedDate (default: Relevance)
+  --save-image          save image? It takes a minute or two to save a picture! But pretty (default: False)
+  --file-format         the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: md)
+  --language            The other output lauguage is English, is en (default: en)
+```
 
 ## License
 
@@ -36,4 +168,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contributors
 
-- Yangyang Lis
+- Yangyang Li
+
+```
+
+```
+
+```
+
+```
