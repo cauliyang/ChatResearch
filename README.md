@@ -1,7 +1,6 @@
 # ChatResearch
 
 [![pypi](https://img.shields.io/pypi/v/chat-research.svg)][pypi status]
-[![status](https://img.shields.io/pypi/status/chat-research.svg)][pypi status]
 [![python version](https://img.shields.io/pypi/pyversions/chat-research)][pypi status]
 [![license](https://img.shields.io/pypi/l/chat-research)][license]
 [![precommit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][precommit]
@@ -13,8 +12,15 @@
 [precommit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
-This is a research project on chatbot development and evaluation.
-The project includes several chatbot models and evaluation metrics.
+ChatResearch is a Python package that uses OpenAI's GPT-3 to accelerate research. It provides several features such as generating summary papers, fetching and summarizing papers from arxiv and bioarxiv, generating responses for review comments, and more.
+
+## Why ChatResearch?
+
+Numerous projects and research endeavors have been undertaken in the realm of
+ChatGPT, yet none have met my specific requirements. As a result, I have resolved to
+create my own project, tailored to my personal preferences. I shall persist in
+refining and enhancing this project. Please do not hesitate to leave a star, and I am grateful for your support and ratings
+I welcome any suggestions, proposals, and pull requests.
 
 ## TODO
 
@@ -35,7 +41,7 @@ The project includes several chatbot models and evaluation metrics.
 - Chat Response: Generate response for review comment with specified language.
 - Chat Paper: Fetch or summary paper from local or arxiv with specified query, research fields, and language.
 - Chat Biorxiv: Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
-- [Markdown](https://raw.githubusercontent.com/cauliyang/ChatResearch/main/images/example2.md) and [PDF report](https://raw.githubusercontent.com/cauliyang/ChatResearch/main/images/example1.pdf)
+- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/images/example2.md) and [PDF report](https://github.com/cauliyang/ChatResearch/blob/main/images/example1.pdf)
 
 ## Installation
 
@@ -193,4 +199,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgement
 
 - [ChatPaper](https://github.com/kaixindelele/ChatPaper/blob/main/README.md)
-- ## [Arxiv](https://github.com/lukasschwab/arxiv.py)
+- [Arxiv](https://github.com/lukasschwab/arxiv.py)
