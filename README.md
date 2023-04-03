@@ -1,10 +1,20 @@
 # ChatResearch
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.7-blue)](https://www.python.org/downloads/release/python-370/)
-[![Contributors](https://img.shields.io/badge/contributors-2-green)](https://github.com/ylk4626/ChatResearch/graphs/contributors)
+[![pypi](https://img.shields.io/pypi/v/chat-research.svg)][pypi status]
+[![status](https://img.shields.io/pypi/status/chat-research.svg)][pypi status]
+[![python version](https://img.shields.io/pypi/pyversions/chat-research)][pypi status]
+[![license](https://img.shields.io/pypi/l/chat-research)][license]
+[![precommit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][precommit]
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)][black]
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://github.com/charliermarsh/ruff)
 
-This is a research project on chatbot development and evaluation. The project includes several chatbot models and evaluation metrics.
+[pypi status]: https://pypi.org/project/chat-research/
+[license]: https://opensource.org/licenses/GPLv3
+[precommit]: https://github.com/pre-commit/pre-commit
+[black]: https://github.com/psf/black
+
+This is a research project on chatbot development and evaluation.
+The project includes several chatbot models and evaluation metrics.
 
 ## TODO
 
