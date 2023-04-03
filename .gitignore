@@ -142,3 +142,4 @@ backup/
 pdf_files
 export
 chatre.toml
+*.cast

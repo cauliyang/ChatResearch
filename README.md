@@ -27,14 +27,15 @@ I welcome any suggestions, proposals, and pull requests.
 ## TODO
 
 - [ ] Multi thread support
-- [ ] Support Async support
+- [ ] Support Asynchronous support
 - [ ] Format PDF output
 - [ ] Support output latex
 - [ ] Tune prompt to support latex
 - [ ] Fine-tune prompt
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
-- [ ] Add gif
+- [ ] Add GIF
+- [ ] Revise help document
 
 ## Features
 
@@ -53,6 +54,8 @@ $pip install chat-research
 ```
 
 ## Usage
+
+![help.gif](https://github.com/cauliyang/ChatResearch/blob/main//tutorial/help.gif)
 
 ```console
 > chatre -h
