@@ -1,10 +1,20 @@
 [tool.poetry]
 name = "chat-research"
 version = "0.1.4"
-description = "Use ChatGPT to summarize the papers."
+description = "Use ChatGPT to accelerator your research."
 authors = ["Yangyang Li <yangyang.li@northwestern.edu>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/cauliyang/ChatResearch"
+repository = "https://github.com/cauliyang/ChatResearch"
+documentation = "https://github.com/cauliyang/ChatResearch"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"

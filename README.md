@@ -19,9 +19,13 @@ The project includes several chatbot models and evaluation metrics.
 ## TODO
 
 - [ ] Multi thread support
+- [ ] Support Async support
 - [ ] Format PDF output
 - [ ] Support output latex
 - [ ] Tune prompt to support latex
+- [ ] Finetune prompt
+- [ ] Generate Image
+- [ ] Add RSS support for multiple journal
 
 ## Features
 
@@ -183,3 +187,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contributors
 
 - Yangyang Li
+
+![Alt](https://repobeats.axiom.co/api/embed/05714e0999ba02041b2be2307b7923d497c0b5c3.svg "Repobeats analytics image")
+
+## Acknowledgement
+
+- [ChatPaper](https://github.com/kaixindelele/ChatPaper/blob/main/README.md)
+- ## [Arxiv](https://github.com/lukasschwab/arxiv.py)
