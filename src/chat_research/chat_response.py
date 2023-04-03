@@ -147,7 +147,7 @@ class Response:
             f.write(text)
 
 
-def chat_response_main(args):
+def main(args):
     Response1 = Response(args=args)
     Response1.response_by_chatgpt(comment_path=args.comment_path)
 
@@ -182,4 +182,4 @@ def add_subcommand(parser):
 
 def cli(args):
     parameter = ResponseParams(**vars(args))
-    chat_response_main(parameter)
+    main(parameter)

@@ -232,7 +232,7 @@ class Reviewer:
             f.write(text)
 
 
-def chat_reviewer_main(args):
+def main(args):
     reviewer1 = Reviewer(args=args)
     # 开始判断是路径还是文件：
     paper_list = []
@@ -272,6 +272,7 @@ def add_subcommand(parser):
         "--file-format",
         type=str,
         default="txt",
+        choices=["txt", "md"],
         metavar="",
         help="output file format (default: %(default)s)",
     )
@@ -301,4 +302,4 @@ def add_subcommand(parser):
 
 def cli(args):
     parameters = ReviewerParams(**vars(args))
-    chat_reviewer_main(parameters)
+    main(parameters)

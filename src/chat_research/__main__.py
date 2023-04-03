@@ -35,12 +35,12 @@ class RichHelpFormatter(argparse.HelpFormatter):
 
     def __init__(self, *args: Any, **kwargs: Any):
         """RichHelpFormatter."""
-        super().__init__(*args, max_help_position=42, width=80, **kwargs)  # type: ignore
+        super().__init__(*args, max_help_position=42, width=100, **kwargs)  # type: ignore
 
 
-def main():
+def cli():
     parser = RichArgParser(
-        description="[red]chatpaper[/] Use ChatGPT to accelerate research",
+        description="[red]chatre[/] Use ChatGPT to accelerate research",
         formatter_class=RichHelpFormatter,
     )
 
@@ -49,9 +49,10 @@ def main():
         description="valid subcommand",
         dest="subcommand",
     )
+
     logger.remove()
     logger.add(
-        sys.stderr,
+        sys.stdout,
         format="'<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <level>{message}</level>",
         level="INFO",
     )
@@ -68,7 +69,6 @@ def main():
         raise SystemExit
 
     if args.subcommand == chat_paper_command:
-        print("chat_paper")
         chat_paper.cli(args)
     elif args.subcommand == chat_arxiv_command:
         chat_arxiv.cli(args)

@@ -55,7 +55,8 @@ class Reader:
         elif args.language == "zh":
             self.language = "Chinese"
         else:
-            self.language = "Chinese"
+            self.language = "English"
+
         self.root_path = root_path
         self.config, self.chat_api_list = load_config()
 
@@ -169,7 +170,7 @@ class Reader:
         path = (
             self.root_path
             + "pdf_files/"
-            + self.validateTitle(self.args.query)
+            + self.validateTitle(self.query)
             + "-"
             + date_str
         )
@@ -543,7 +544,7 @@ class Reader:
         logger.info(f"Sort: {self.sort}")
 
 
-def chat_arxiv_main(args):
+def main(args):
     reader1 = Reader(key_word=args.key_word, query=args.query, args=args)
     reader1.show_info()
     paper_list = reader1.get_arxiv_web(
@@ -618,4 +619,4 @@ def add_subcommnd(parser):
 
 def cli(args):
     parameters = ArxivParams(**vars(args))
-    chat_arxiv_main(parameters)
+    main(parameters)

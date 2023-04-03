@@ -6,6 +6,10 @@
 
 This is a research project on chatbot development and evaluation. The project includes several chatbot models and evaluation metrics.
 
+## TODO
+
+- [ ] multi thread
+
 ## Installation
 
 1. Clone the repository
