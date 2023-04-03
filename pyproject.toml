@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chat-research"
-version = "0.1.2"
+version = "0.1.3"
 description = "Use ChatGPT to summarize the papers."
 authors = ["Yangyang Li <yangyang.li@northwestern.edu>"]
 license = "MIT"

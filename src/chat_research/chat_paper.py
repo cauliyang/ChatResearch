@@ -261,17 +261,15 @@ def main(args):
             paper_list.append(Paper(path=args.pdf_path))
             logger.info(f"read pdf file {args.pdf_path}")
         else:
+            logger.info(f"read pdf files from path {args.pdf_path}")
             for root, dirs, files in os.walk(args.pdf_path):
                 logger.trace(f"root: {root}, dirs: {dirs}, files: {files}")
                 for filename in files:
                     # 如果找到PDF文件，则将其复制到目标文件夹中
                     if filename.endswith(".pdf"):
                         paper_list.append(Paper(path=os.path.join(root, filename)))
-                        logger.info(f"read pdf file {args.pdf_path}")
 
-        logger.info(
-            "------------------paper_num: {}------------------".format(len(paper_list))
-        )
+        logger.info("paper_num: {}".format(len(paper_list)))
         for paper_index, paper_name in enumerate(paper_list):
             name = paper_name.path.split("\\")[-1]
             logger.info(f"{paper_index=}, {name=}")

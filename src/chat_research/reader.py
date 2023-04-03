@@ -326,13 +326,13 @@ class BaseReader:
             },
             {
                 "role": "user",
-                "content": """
-                 1. Mark the title of the paper (with Chinese translation)
+                "content": f"""
+                 1. Mark the title of the paper
                  2. list all the authors' names (use English)
-                 3. mark the first author's affiliation (output {} translation only)
+                 3. mark the first author's affiliation (use English)
                  4. mark the keywords of this article (use English)
                  5. link to the paper, Github code link (if available, fill in Github:None if not)
-                 6. summarize according to the following four points.Be sure to use {} answers (proper nouns need to be marked in English)
+                 6. summarize according to the following four points.Be sure to use {self.language} answers (proper nouns need to be marked in English)
                     - (1):What is the research background of this article?
                     - (2):What are the past methods? What are the problems with them? Is the approach well motivated?
                     - (3):What is the research methodology proposed in this paper?
@@ -349,10 +349,9 @@ class BaseReader:
                     - (3):xxx;\n
                     - (4):xxx.\n\n
 
-                 Be sure to use {} answers (proper nouns need to be marked in English), statements as concise and academic as possible, do not have too much repetitive information, numerical values using the original numbers, be sure to strictly follow the format, the corresponding content output to xxx, in accordance with \n line feed.
-                 """.format(
-                    self.language, self.language, self.language
-                ),
+                 Be sure to use {self.language} answers (proper nouns need to be marked in English), statements as concise and academic as possible, do not have too much repetitive information, numerical values using the original numbers, be sure to strictly follow the format,
+                 the corresponding content output to xxx, in accordance with \n line feed.
+                 """,
             },
         ]
 

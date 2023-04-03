@@ -18,7 +18,10 @@ The project includes several chatbot models and evaluation metrics.
 
 ## TODO
 
-- [ ] multi thread support
+- [ ] Multi thread support
+- [ ] Format PDF output
+- [ ] Support output latex
+- [ ] Tune prompt to support latex
 
 ## Features
 
@@ -28,6 +31,7 @@ The project includes several chatbot models and evaluation metrics.
 - Chat Response: Generate response for review comment with specified language.
 - Chat Paper: Fetch or summary paper from local or arxiv with specified query, research fields, and language.
 - Chat Biorxiv: Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
+- [Markdown](https://raw.githubusercontent.com/cauliyang/ChatResearch/main/images/example2.md) and [PDF report](https://raw.githubusercontent.com/cauliyang/ChatResearch/main/images/example1.pdf)
 
 ## Installation
 
@@ -38,7 +42,7 @@ $pip install chat-research
 ## Usage
 
 ```console
-> chatre -h                                                                                                                                 (chatpaper)
+> chatre -h
 usage: chatre [-h] [--log-level ]
               {reviewer,arxiv,response,paper,config,biorxiv} ...
 
@@ -84,7 +88,7 @@ path = "files_name_in_your_repo"
 ### Chat Reviewer
 
 ```console
-> chatre reviewer -h                                                                                                                        (chatpaper)
+> chatre reviewer -h
 usage: chatre reviewer [-h] --paper-path  [--file-format] [--review-format] [--research-fields] [--language]
 
 optional arguments:
@@ -99,7 +103,7 @@ optional arguments:
 ### Chat Arxiv
 
 ```console
-❯ chatre arxiv -h                                                                                                                           (chatpaper)
+❯ chatre arxiv -h
 usage: chatre arxiv [-h] [--query] [--key-word] [--page-num] [--max-results] [--days] [--sort] [--save-image] [--file-format] [--language]
 
 optional arguments:
@@ -118,7 +122,7 @@ optional arguments:
 ### Chat Response
 
 ```console
-❯ chatre response -h                                                                                                                        (chatpaper)
+❯ chatre response -h
 usage: chatre response [-h] --comment-path  [--file-format] [--language]
 
 optional arguments:
@@ -132,7 +136,7 @@ optional arguments:
 ### Chat Paper
 
 ```console
-❯ chatre paper -h                                                                                                                           (chatpaper)
+❯ chatre paper -h
 usage: chatre paper [-h] [--pdf-path] [--query] [--key-word] [--filter-keys] [--max-results] [--sort] [--save-image] [--file-format] [--language]
 
 optional arguments:
@@ -153,7 +157,7 @@ optional arguments:
 ### Chat Biorxiv
 
 ```console
-❯ chatre biorxiv -h                                                                                                                         (chatpaper)
+❯ chatre biorxiv -h
 usage: chatre biorxiv [-h] [--category  [...]] [--date  | --days ] [--server] [--filter-keys  [...]] [--max-results] [--sort] [--save-image]
                       [--file-format] [--language]
 
