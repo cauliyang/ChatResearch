@@ -87,7 +87,7 @@ class BaseReader:
                 try:
                     chat_method_text = self.chat_method(text=text, key_words=key_words)
                 except Exception as e:
-                    logger.info(f"method_error: {e}")
+                    logger.error(f"method_error: {e}")
                     if "maximum context" in str(e):
                         current_tokens_index = (
                             str(e).find("your messages resulted in")
@@ -230,7 +230,7 @@ class BaseReader:
         for choice in response.choices:
             result += choice.message.content
 
-        logger.info(f"conclusion_result:\n{result}")
+        logger.trace(f"conclusion_result:\n{result}")
         report_token_usage(response)
 
         return result

@@ -162,7 +162,7 @@ class Paper:
                             max_font_size = font_size  # 更新最大值
                             block["lines"][0]["spans"][0]["text"]  # 更新最大值对应的字符串
         max_font_sizes.sort()
-        logger.info(f"max_font_sizes {max_font_sizes[-10:]}")
+        logger.trace(f"max_font_sizes {max_font_sizes[-10:]}")
         cur_title = ""
         for page_index, page in enumerate(doc):  # 遍历每一页
             text = page.get_text("dict")  # 获取页面上的文本信息
