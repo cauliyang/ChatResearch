@@ -65,7 +65,7 @@ $pip install chat-research
 ❯ chatre config
 ```
 
-It will generate `apikey.toml` in current working directory. Otherwise,
+It will generate `chatre.toml` in current working directory. Otherwise,
 setting environment variable `OPENAI_API_KEY` is another way to config API KEY.
 
 ```toml
