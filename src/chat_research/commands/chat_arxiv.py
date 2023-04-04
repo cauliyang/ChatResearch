@@ -561,6 +561,7 @@ def add_subcommnd(parser):
         metavar="",
         help="the key word of user research fields",
     )
+
     subparser.add_argument(
         "--page-num", type=int, default=1, metavar="", help="the maximum number of page"
     )

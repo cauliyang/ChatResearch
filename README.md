@@ -36,7 +36,7 @@ I welcome any suggestions, proposals, and pull requests.
 - [ ] Add RSS support for multiple journal
 - [ ] Add GIF
 - [ ] Revise help document
-- [ ] Use config to set key
+- [x] Use config to set key
 
 ## Features
 
