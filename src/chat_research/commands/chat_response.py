@@ -10,7 +10,7 @@ from pydantic import BaseModel, validator
 
 from chat_research.utils import report_token_usage
 
-from .utils import load_config
+from ..utils import load_config
 
 
 # ChatResponse

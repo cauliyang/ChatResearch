@@ -5,9 +5,9 @@ import tenacity
 from loguru import logger
 from pydantic import BaseModel
 
-from .paper_with_image import Paper
-from .provider import biorxiv
-from .reader import BaseReader
+from ..paper_with_image import Paper
+from ..provider import biorxiv
+from ..reader import BaseReader
 
 
 class Params(BaseModel):

@@ -13,8 +13,8 @@ from bs4 import BeautifulSoup
 from loguru import logger
 from pydantic import BaseModel
 
-from .paper_with_image import Paper
-from .utils import load_config, report_token_usage
+from ..paper_with_image import Paper
+from ..utils import load_config, report_token_usage
 
 
 class ArxivParams(BaseModel):

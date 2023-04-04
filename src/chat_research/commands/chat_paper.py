@@ -7,8 +7,8 @@ import tenacity
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from .paper_with_image import Paper
-from .reader import BaseReader
+from ..paper_with_image import Paper
+from ..reader import BaseReader
 
 
 class PaperParams(BaseModel):

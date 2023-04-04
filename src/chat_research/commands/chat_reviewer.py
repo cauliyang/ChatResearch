@@ -12,8 +12,8 @@ from pydantic import BaseModel, validator
 
 from chat_research.utils import report_token_usage
 
-from .paper import Paper
-from .utils import load_config
+from ..paper import Paper
+from ..utils import load_config
 
 
 class ReviewerParams(BaseModel):

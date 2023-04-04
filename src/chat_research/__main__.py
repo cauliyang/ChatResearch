@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 from loguru import logger
 
-from . import (
+from .commands import (
     chat_arxiv,
     chat_biorxiv,
     chat_config,

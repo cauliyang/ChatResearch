@@ -1,7 +1,7 @@
 import toml
 from loguru import logger
 
-from .utils import CONFIG_FILE_NAME
+from ..utils import CONFIG_FILE_NAME
 
 
 def create_config_file():
