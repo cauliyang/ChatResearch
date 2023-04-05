@@ -40,12 +40,13 @@ I welcome any suggestions, proposals, and pull requests.
 ## Features
 
 - [Chat Config](#chat-config): Generate `chatre.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
-- [Chat Reviewer](#chat-reviewer): Generate summary paper with specified research fields and language.
-- [Chat Arxiv](#chat-arxiv): Fetch and summary paper from arxiv with specified query and language.
-- [Chat Response](#chat-response): Generate response for review comment with specified language.
 - [Chat Paper](#chat-paper): Fetch or summary paper from local or arxiv with specified query, research fields, and language.
 - [Chat Biorxiv](#chat-biorxiv): Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
+- [Chat Reviewer](#chat-reviewer): Generate summary paper with specified research fields and language.
+- [Chat Response](#chat-response): Generate response for review comment with specified language.
 - [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/images/example2.md) and [PDF report](https://github.com/cauliyang/ChatResearch/blob/main/images/example1.pdf)
+
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/project.gif" width="800" height="400">
 
 ## Installation
 
@@ -67,6 +68,8 @@ $pip install chat-research
 
 It will generate `chatre.toml` in current working directory. Otherwise,
 setting environment variable `OPENAI_API_KEY` is another way to config API KEY.
+Also, `chatre config set OPENAI_API_KEY=sk-key` will create configuration file
+in current file directory and set your key as `sk-key`.
 
 ```toml
 [OpenAI]
@@ -78,6 +81,18 @@ owner = "your_gitee_name"
 repo = "your_repo_name"
 path = "files_name_in_your_repo"
 ```
+
+### Chat Paper
+
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/paper.gif" width="800" height="400">
+
+### Chat Biorxiv
+
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/biorxiv.gif" width="800" height="400">
+
+### Chat Response
+
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/response.gif" width="800" height="400">
 
 ### Chat Reviewer
 
@@ -93,22 +108,6 @@ optional arguments:
   --research-fields   the research fields of paper (default: computer science, artificial intelligence and reinforcement learning)
   --language          output language, en or zh (default: en)
 ```
-
-### Chat Arxiv
-
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/arxiv.gif" width="800" height="400">
-
-### Chat Response
-
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/response.gif" width="800" height="400">
-
-### Chat Paper
-
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/paper.gif" width="800" height="400">
-
-### Chat Biorxiv
-
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/bioarxiv.gif" width="800" height="400">
 
 ## License
 
