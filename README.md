@@ -26,26 +26,25 @@ I welcome any suggestions, proposals, and pull requests.
 
 ## TODO
 
-- [ ] Multi thread support
-- [ ] Support Asynchronous support
+- [ ] Multi thread and Asynchronous support
 - [ ] Format PDF output
-- [ ] Support output latex
 - [ ] Tune prompt to support latex
+- [ ] Support output latex
 - [ ] Fine-tune prompt
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
-- [ ] Add GIF
-- [ ] Revise help document
+- [x] Add GIF for document
+- [ ] Revise help message
 - [x] Use config to set key
 
 ## Features
 
-- Chat Config: Generate `chatre.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
-- Chat Reviewer: Generate summary paper with specified research fields and language.
-- Chat Arxiv: Fetch and summary paper from arxiv with specified query and language.
-- Chat Response: Generate response for review comment with specified language.
-- Chat Paper: Fetch or summary paper from local or arxiv with specified query, research fields, and language.
-- Chat Biorxiv: Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
+- [Chat Config](#chat-config): Generate `chatre.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
+- [Chat Reviewer](#chat-reviewer): Generate summary paper with specified research fields and language.
+- [Chat Arxiv](#chat-arxiv): Fetch and summary paper from arxiv with specified query and language.
+- [Chat Response](#chat-response): Generate response for review comment with specified language.
+- [Chat Paper](#chat-paper): Fetch or summary paper from local or arxiv with specified query, research fields, and language.
+- [Chat Biorxiv](#chat-biorxiv): Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
 - [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/images/example2.md) and [PDF report](https://github.com/cauliyang/ChatResearch/blob/main/images/example1.pdf)
 
 ## Installation
