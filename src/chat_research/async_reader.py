@@ -13,9 +13,12 @@ from .export import export
 from .utils import load_config, report_token_usage
 
 
-class BaseReader:
+class AsyncBaseReader:
     def __init__(self, root_path, language, file_format, save_image):
-        self.root_path = Path(root_path)
+        if isinstance(root_path, str):
+            root_path = Path(root_path)
+
+        self.root_path = root_path
         self.language = language
         self.file_format = file_format
 
@@ -27,7 +30,7 @@ class BaseReader:
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
 
-    def summary_with_chat(self, paper_list, key_words):
+    async def summary_with_chat(self, paper_list, key_words):
         htmls = []
         for paper_index, paper in enumerate(paper_list):
             # 第一步先用title，abs，和introduction进行总结。
@@ -41,7 +44,9 @@ class BaseReader:
             chat_summary_text = ""
 
             try:
-                chat_summary_text = self.chat_summary(text=text, key_words=key_words)
+                chat_summary_text = await self.chat_summary(
+                    text=text, key_words=key_words
+                )
             except Exception as e:
                 logger.warning(f"summary_error: {e}")
                 if "maximum context" in str(e):
@@ -54,7 +59,7 @@ class BaseReader:
                         str(e)[current_tokens_index : current_tokens_index + 4]
                     )
                     summary_prompt_token = offset + 1000 + 150
-                    chat_summary_text = self.chat_summary(
+                    chat_summary_text = await self.chat_summary(
                         text=text,
                         key_words=key_words,
                         summary_prompt_token=summary_prompt_token,
@@ -84,7 +89,9 @@ class BaseReader:
                 text = summary_text + "\n\n<Methods>:\n\n" + method_text
                 chat_method_text = ""
                 try:
-                    chat_method_text = self.chat_method(text=text, key_words=key_words)
+                    chat_method_text = await self.chat_method(
+                        text=text, key_words=key_words
+                    )
                 except Exception as e:
                     logger.error(f"method_error: {e}")
                     if "maximum context" in str(e):
@@ -97,7 +104,7 @@ class BaseReader:
                             str(e)[current_tokens_index : current_tokens_index + 4]
                         )
                         method_prompt_token = offset + 800 + 150
-                        chat_method_text = self.chat_method(
+                        chat_method_text = await self.chat_method(
                             text=text,
                             key_words=key_words,
                             method_prompt_token=method_prompt_token,
@@ -123,6 +130,7 @@ class BaseReader:
                 + "\n <Method summary>:\n"
                 + chat_method_text
             )
+
             if conclusion_key != "":
                 # conclusion
                 conclusion_text += paper.section_text_dict[conclusion_key]
@@ -132,7 +140,7 @@ class BaseReader:
 
             chat_conclusion_text = ""
             try:
-                chat_conclusion_text = self.chat_conclusion(
+                chat_conclusion_text = await self.chat_conclusion(
                     text=text, key_words=key_words
                 )
             except Exception as e:
@@ -147,7 +155,7 @@ class BaseReader:
                         str(e)[current_tokens_index : current_tokens_index + 4]
                     )
                     conclusion_prompt_token = offset + 800 + 150
-                    chat_conclusion_text = self.chat_conclusion(
+                    chat_conclusion_text = await self.chat_conclusion(
                         text=text,
                         key_words=key_words,
                         conclusion_prompt_token=conclusion_prompt_token,
@@ -178,7 +186,7 @@ class BaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def chat_conclusion(self, text, key_words, conclusion_prompt_token=800):
+    async def chat_conclusion(self, text, key_words, conclusion_prompt_token=800):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -220,7 +228,7 @@ class BaseReader:
                 ),
             },
         ]
-        response = openai.ChatCompletion.create(
+        response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             # prompt需要用英语替换，少占用token。
             messages=messages,
@@ -239,7 +247,7 @@ class BaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def chat_method(self, text, key_words, method_prompt_token=800):
+    async def chat_method(self, text, key_words, method_prompt_token=800):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -284,13 +292,15 @@ class BaseReader:
                 ),
             },
         ]
-        response = openai.ChatCompletion.create(
+        response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=messages,
         )
+
         result = ""
         for choice in response.choices:
             result += choice.message.content
+
         logger.trace(f"method_result:\n{result}")
         report_token_usage(response)
 
@@ -301,7 +311,7 @@ class BaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    def chat_summary(self, text, key_words, summary_prompt_token=1100):
+    async def chat_summary(self, text, key_words, summary_prompt_token=1100):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -354,11 +364,12 @@ class BaseReader:
             },
         ]
 
-        response = openai.ChatCompletion.create(
+        response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=messages,
         )
         result = ""
+
         for choice in response.choices:
             result += choice.message.content
 

@@ -55,7 +55,6 @@ class Reader(BaseReader):
             language = "English"
 
         super().__init__(
-            filter_keys,
             root_path,
             language,
             args.file_format,
@@ -64,6 +63,7 @@ class Reader(BaseReader):
 
         self.user_name = user_name  # 读者姓名
         self.key_word = key_word  # 读者感兴趣的关键词
+        self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
         self.query = query  # 读者输入的搜索查询
         self.sort = sort  # 读者选择的排序方式
 

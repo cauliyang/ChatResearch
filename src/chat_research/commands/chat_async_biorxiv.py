@@ -45,7 +45,6 @@ class Reader(BaseReader):
             language = "English"
 
         super().__init__(
-            filter_keys,
             root_path,
             language,
             args.file_format,
@@ -56,6 +55,7 @@ class Reader(BaseReader):
         self.sort = sort  # 读者选择的排序方式
         self.args = args
         self.category = category
+        self.filter_keys = filter_keys
 
     def get_biorxiv(self, max_results=30):
         if self.args.days is not None:

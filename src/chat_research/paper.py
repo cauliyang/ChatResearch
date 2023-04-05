@@ -69,7 +69,6 @@ class Paper:
                         point_split_list[0] in self.roman_num
                         or point_split_list[0] in self.digit_num
                     ):
-                        # print("line:", line)
                         chapter_names.append(line)
 
         return chapter_names
