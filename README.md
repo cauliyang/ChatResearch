@@ -26,7 +26,7 @@ I welcome any suggestions, proposals, and pull requests.
 
 ## TODO
 
-- [ ] Multi thread and Asynchronous support
+- [x] Multi thread and Asynchronous support
 - [ ] Format PDF output
 - [ ] Tune prompt to support latex
 - [ ] Support output latex
