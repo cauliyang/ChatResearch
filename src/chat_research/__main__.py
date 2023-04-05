@@ -45,7 +45,7 @@ class RichHelpFormatter(argparse.HelpFormatter):
         super().__init__(*args, max_help_position=42, width=100, **kwargs)  # type: ignore
 
 
-def cli():
+def _cli():
     parser = RichArgParser(
         description="[red]chatre[/] Use ChatGPT to accelerate research",
         formatter_class=RichHelpFormatter,
@@ -112,3 +112,11 @@ def cli():
         raise SystemExit
 
     logger.success("Done")
+
+
+def cli():
+    try:
+        _cli()
+    except KeyboardInterrupt:
+        logger.info("Say youn again!")
+        raise SystemExit

@@ -8,9 +8,9 @@ import aiohttp
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from .paper_with_image import Paper
-from .provider import async_arxiv as arxiv
-from .reader import BaseReader
+from ..paper_with_image import Paper
+from ..provider import async_arxiv as arxiv
+from ..reader import BaseReader
 
 
 class PaperParams(BaseModel):
@@ -164,7 +164,7 @@ class Reader(BaseReader):
 
 
 def add_subcommand(parser):
-    name = "asyncpaper"
+    name = "paper"
     subparser = parser.add_parser(
         name, help="Fetch or Summary paper from local or arxiv"
     )
