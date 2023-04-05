@@ -1,5 +1,4 @@
-__version__ = "0.1.0"
-__PACKAGE_NAME__ = "chat-research"
+__PACKAGE_NAME__ = "chat_research"
 
 
 from rich.traceback import install

@@ -273,7 +273,7 @@ def add_subcommand(parser):
         "--file-format",
         type=str,
         default="md",
-        choices=["md", "txt", "pdf"],
+        choices=["md", "txt", "pdf", "tex"],
         metavar="",
         help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
     )

@@ -29,9 +29,7 @@ I welcome any suggestions, proposals, and pull requests.
 - [x] Multi thread and Asynchronous support
 - [x] Add GIF for document
 - [x] Use config to set key
-- [ ] Format PDF output
-- [ ] Tune prompt to support latex
-- [ ] Support output latex
+- [x] Support output for Latex and PDF
 - [ ] Fine-tune prompt
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
@@ -45,7 +43,7 @@ I welcome any suggestions, proposals, and pull requests.
 - [Chat Biorxiv](#chat-biorxiv): Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
 - [Chat Reviewer](#chat-reviewer): Generate summary paper with specified research fields and language.
 - [Chat Response](#chat-response): Generate response for review comment with specified language.
-- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example2.md) and [PDF report](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example1.pdf)
+- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example2.md), [PDF](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example1.pdf), and [Latex](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example5.tex)
 
 <img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/project.gif" width="800" height="400">
 

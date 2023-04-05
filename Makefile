@@ -31,3 +31,6 @@ test-full: ## Run all tests
 commit: format ## commit
 	git add .
 	aic
+
+install: ## install the lib
+	poetry install

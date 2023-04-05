@@ -233,7 +233,7 @@ def add_subcommand(parser):
         "--file-format",
         type=str,
         default="md",
-        choices=["md", "txt", "pdf"],
+        choices=["md", "txt", "pdf", "tex"],
         metavar="",
         help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
     )
@@ -267,7 +267,6 @@ def main(args):
             args=args,
         )
         reader.show_info()
-        # 开始判断是路径还是文件：
         paper_list = []
         if args.pdf.endswith(".pdf"):
             paper_list.append(Paper(path=args.pdf))
