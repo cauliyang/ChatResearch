@@ -45,6 +45,11 @@ class AsyncBaseReader:
     def summary_with_chat(self, paper_list: list[Paper], key_words):
         asyncio.run(self._summary_with_chat(paper_list, key_words))
 
+    def find_title(self, text):
+        for line in text.split("\n"):
+            if "Title:" in line:
+                return line.split("Title:")[1].strip()
+
     async def summary_with_chat_for_one_paper(
         self, paper: Paper, paper_index: int, key_words
     ):
@@ -78,6 +83,9 @@ class AsyncBaseReader:
                 )
             else:
                 raise e
+
+        if (title := self.find_title(chat_summary_text)) is not None:
+            paper.title = title
 
         htmls.append("## Paper:" + str(paper_index + 1))
         htmls.append("\n\n\n")

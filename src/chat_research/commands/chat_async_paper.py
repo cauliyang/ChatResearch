@@ -14,7 +14,7 @@ from ..provider import async_arxiv as arxiv
 
 
 class PaperParams(BaseModel):
-    pdf_path: str
+    pdf: str
     query: str
     key_word: str
     filter_keys: Optional[list[str]] = None
@@ -24,7 +24,7 @@ class PaperParams(BaseModel):
     file_format: str
     language: str
 
-    @validator("pdf_path")
+    @validator("pdf")
     def pdf_path_must_exist(cls, v):
         if not Path(v).exists():
             raise ValueError("pdf_path must exist")
@@ -169,7 +169,7 @@ def add_subcommand(parser):
         name, help="Fetch or Summary paper from local or arxiv"
     )
     subparser.add_argument(
-        "--pdf-path",
+        "--pdf",
         type=str,
         default="",
         metavar="",
@@ -253,7 +253,7 @@ def main(args):
     else:
         sort = arxiv.SortCriterion.Relevance
 
-    if args.pdf_path:
+    if args.pdf:
         reader = Reader(
             key_word=args.key_word,
             query=args.query,
@@ -264,12 +264,12 @@ def main(args):
         reader.show_info()
         # 开始判断是路径还是文件：
         paper_list = []
-        if args.pdf_path.endswith(".pdf"):
-            paper_list.append(Paper(path=args.pdf_path))
-            logger.info(f"read pdf file {args.pdf_path}")
+        if args.pdf.endswith(".pdf"):
+            paper_list.append(Paper(path=args.pdf))
+            logger.info(f"read pdf file {args.pdf}")
         else:
-            logger.info(f"read pdf files from path {args.pdf_path}")
-            for root, dirs, files in os.walk(args.pdf_path):
+            logger.info(f"read pdf files from path {args.pdf}")
+            for root, dirs, files in os.walk(args.pdf):
                 logger.trace(f"root: {root}, dirs: {dirs}, files: {files}")
                 for filename in files:
                     # 如果找到PDF文件，则将其复制到目标文件夹中
