@@ -1,35 +1,38 @@
-## Paper:5
+## Paper:4
 
-1.  Title: Connectivity-based Meta-Bands: A new approach for automatic frequency band identification in connectivity analyses （连接性元子带:一种自动化的频带识别方法，用于连接性分析）
+1. Title: A class of antibodies that overcome a steric barrier to cross-group neutralization of influenza viruses
 
-                 2. Authors: Víctor Rodríguez-González, Pablo Núñez, Carlos Gómez, Yoshihito Shigihara, Hideyuki Hoshi, Miguel Ángel Tola-Arribas, Mónica Cano, Ángel Guerrero, David García-Azorín, Roberto Hornero, Jesús Poza
+2. Authors: Holly C. Simmons, Akiko Watanabe, Thomas H. Oguin III, Gregory D. Sempowski,
+   Masayuki Kuraoka, Garnett Kelsoe, and Kevin R. McCarthy
 
+3. Affiliation: Center for Vaccine Research, University of Pittsburgh School of Medicine,
+   Pittsburgh, PA, USA.
 
-                 3. Affiliation: Biomedical Engineering Group, University of Valladolid （瓦拉多利德大学生物医学工程组）
+4. Keywords: influenza virus, hemagglutinin, antibodies, cross-group neutralization,
+   receptor binding site
 
+5. Urls: https://doi.org/10.1101/2023.04.01.535242, Github:None
 
-                 4. Keywords: Connectivity-based Meta-Bands, functional connectivity, frequency bands, EEG, MEG
+6. Summary:
 
+- (1): The research background of this paper is to find broadly protective antibodies to influenza viruses.
+- (2): Past methods have focused on targeting the hemagglutinin receptor binding site (RBS), but a steric
+  barrier at position 133a on the RBS has prevented H1-H3 cross-subtype neutralization by RBS-targeted
+  antibodies. The approach taken in this paper is well-motivated as the authors aim to identify a class of
+  antibodies that can overcome this barrier.
+- (3): The research methodology proposed in this paper involves identifying a genetically unrestricted
+  class of antibodies, which were likely elicited by exposure to H3 and then later broadened/diverted
+  through exposure to H1 HA. They also analyze the affinities of selected members of this class for historical
+  H1 and H3 isolates to determine the potential of eliciting 133a-independent, H1-H3 cross-neutralization by
+  RBS-directed antibodies.
+- (4): The methods in this paper identified a class of antibodies that can overcome the steric barrier and
+  showed that RBS mutations in egg-adapted vaccine strains cause the new H1 specificity of these antibodies
+  to depend on the egg adaptation. The potential for suitable immunogens to elicit 133a-independent,
+  H1-H3 cross-neutralization by RBS-directed antibodies is suggested. Thus, the results in this paper
+  support the goal of finding broadly protective antibodies to influenza viruses.
 
-                 5. Urls: https://doi.org/10.1101/2023.03.30.534879, Github: None
+8. Conclusion:
 
+- (1): The significance of this work lies in the identification of a class of antibodies that can overcome a steric barrier in the hemagglutinin receptor binding site, leading to potential broad protection against different subtypes of influenza viruses.
 
-                 6. Summary:
-
-                    - (1):The research background of this article is that the majority of electroencephalographic (EEG) and magnetoencephalographic (MEG) studies filter and analyze neural signals in specific frequency ranges, known as "canonical" frequency bands, but this segmentation is not exempt from limitations, mainly due to the lack of adaptation to the neural idiosyncrasies of each individual.
-
-                    - (2):Past methods include fixed canonical frequency bands and subject-adaptive frequency bands that rely on local activation patterns. The proposed approach is well motivated as it accounts for the frequency-dependent network structure and provides more personalized analyses.
-
-                    - (3):The research methodology proposed in this paper is an unsupervised band segmentation method based on the topological similarity of functional neural networks across frequencies. The Connectivity-based Meta-Bands (CMB) algorithm identifies communities in the frequency domain showing a similar network topology.
-
-                    - (4):The CMB algorithm provides personalized analyses that adapt to the individual idiosyncrasies of neural activity of each subject, allowing for connectivity analyses accounting for the underlying frequency structure. The sensitivity and robustness of this approach were tested on resting-state neural activity of 195 cognitively healthy subjects from three different databases (MEG: 123 subjects; EEG1: 27 subjects; EEG2: 45 subjects). The results show that the classical approaches to band segmentation reflect the underlying network topologies at the group level for MEG signals, but fail to adapt to individual differentiating patterns revealed by the CMB methodology, which fully accounts for subject-specific patterns. To the best of their knowledge, this is the first study that proposes an unsupervised band segmentation method based on the topological similarity of functional neural networks across frequencies.
-
-2.  Conclusion:
-
-- (1): The significance of this piece of work lies in providing a new approach for automatic frequency band identification in connectivity analyses, which fully accounts for subject-specific patterns and allows for personalized analyses that adapt to the individual idiosyncrasies of neural activity.
-
-- (2): Innovation point: The Connectivity-based Meta-Bands (CMB) algorithm proposed in this article is an unsupervised band segmentation method based on the topological similarity of functional neural networks across frequencies, which is a novel approach for identifying frequency bands.
-
-Performance: The results of the experiments on resting-state neural activity of 195 cognitively healthy subjects from three different databases show that the CMB algorithm outperforms classical approaches to band segmentation in terms of accounting for the underlying frequency structure and identifying subject-specific patterns.
-
-Workload: While the CMB algorithm requires significant computational resources, it is feasible for practical application and provides valuable personalized analyses. Overall, this article makes a valuable contribution to the field of bioinformatics and provides a promising direction for future studies.
+- (2): In terms of innovation, this article proposes a novel approach to identifying broadly protective antibodies by targeting a specific steric barrier, which is a significant contribution to the field. The performance of the methods is supported by the experimental results, which demonstrate the potential of the identified antibodies for cross-group neutralization. However, the workload required for the research is not explicitly discussed in the article. Overall, this article provides valuable insights into the development of broadly protective influenza vaccines.
