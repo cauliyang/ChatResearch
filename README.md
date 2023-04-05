@@ -27,15 +27,15 @@ I welcome any suggestions, proposals, and pull requests.
 ## TODO
 
 - [x] Multi thread and Asynchronous support
+- [x] Add GIF for document
+- [x] Use config to set key
 - [ ] Format PDF output
 - [ ] Tune prompt to support latex
 - [ ] Support output latex
 - [ ] Fine-tune prompt
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
-- [x] Add GIF for document
 - [ ] Revise help message
-- [x] Use config to set key
 
 ## Features
 

@@ -5,7 +5,6 @@ from typing import Any, Optional
 from loguru import logger
 
 from .commands import (
-    chat_arxiv,
     chat_async_biorxiv,
     chat_async_paper,
     chat_config,
@@ -67,7 +66,6 @@ def _cli():
     )
 
     chat_reviewer_command = chat_reviewer.add_subcommand(subparser)
-    chat_arxiv_command = chat_arxiv.add_subcommnd(subparser)
     chat_response_command = chat_response.add_subcommand(subparser)
     chat_config_command = chat_config.add_subcommand(subparser)
     chat_async_biorxiv_command = chat_async_biorxiv.add_subcommand(subparser)
@@ -94,9 +92,7 @@ def _cli():
         parser.print_help()
         raise SystemExit
 
-    if args.subcommand == chat_arxiv_command:
-        chat_arxiv.cli(args)
-    elif args.subcommand == chat_response_command:
+    if args.subcommand == chat_response_command:
         chat_response.cli(args)
     elif args.subcommand == chat_reviewer_command:
         chat_reviewer.cli(args)

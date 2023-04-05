@@ -12,7 +12,7 @@ from loguru import logger
 
 from .aexport import aexport
 from .paper_with_image import Paper
-from .utils import load_config, report_token_usage
+from .utils import load_config
 
 
 class AsyncBaseReader:
@@ -31,6 +31,8 @@ class AsyncBaseReader:
 
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
+
+        self.token_usage = 0
 
     async def _summary_with_chat(self, paper_list: list[Paper], key_words):
         await asyncio.gather(
@@ -245,8 +247,9 @@ class AsyncBaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"conclusion_result:\n{result}")
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -309,17 +312,17 @@ class AsyncBaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"method_result:\n{result}")
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
-    # @tenacity.retry(
-    #     wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-    #     stop=tenacity.stop_after_attempt(5),
-    #     reraise=True,
-    # )
-
+    @tenacity.retry(
+        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
+        stop=tenacity.stop_after_attempt(5),
+        reraise=True,
+    )
     async def chat_summary(self, text, key_words, summary_prompt_token=1100):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
@@ -382,10 +385,18 @@ class AsyncBaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"summary_result:\n{result}")
 
-        report_token_usage(response)
+        self.report_token_usage(response)
 
+        return result
+
+    @staticmethod
+    def format_text(text):
+        result = ""
+        for line in text.split("\n"):
+            result += line.strip() + "\n"
         return result
 
     def validateTitle(self, title):
@@ -393,6 +404,17 @@ class AsyncBaseReader:
         rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
         return new_title
+
+    def show_token_usage(self):
+        money = self.token_usage / 1000 * 0.002
+        logger.info(f"total_token_used: {self.token_usage} ({money:.4f} USD)")
+
+    def report_token_usage(self, response):
+        logger.info(f"prompt_token_used: {response.usage.prompt_tokens}")
+        logger.info(f"completion_token_used: {response.usage.completion_tokens}")
+        logger.info(f"total_token_used: {response.usage.total_tokens}")
+        logger.info(f"response_time: { response.response_ms / 1000.0}s")
+        self.token_usage += response.usage.total_tokens
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),

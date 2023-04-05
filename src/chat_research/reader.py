@@ -10,7 +10,7 @@ import tiktoken
 from loguru import logger
 
 from .export import export
-from .utils import load_config, report_token_usage
+from .utils import load_config
 
 
 class BaseReader:
@@ -26,6 +26,7 @@ class BaseReader:
 
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
+        self.token_usage = 0
 
     def summary_with_chat(self, paper_list, key_words):
         htmls = []
@@ -229,8 +230,9 @@ class BaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"conclusion_result:\n{result}")
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -291,8 +293,10 @@ class BaseReader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
+
+        result = self.format_text(result)
         logger.trace(f"method_result:\n{result}")
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -362,9 +366,10 @@ class BaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"summary_result:\n{result}")
 
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -373,6 +378,24 @@ class BaseReader:
         rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
         return new_title
+
+    @staticmethod
+    def format_text(text):
+        result = ""
+        for line in text.split("\n"):
+            result += line.strip() + "\n"
+        return result
+
+    def show_token_usage(self):
+        money = self.token_usage / 1000 * 0.002
+        logger.info(f"total_token_used: {self.token_usage} ({money} USD)")
+
+    def report_token_usage(self, response):
+        logger.info(f"prompt_token_used: {response.usage.prompt_tokens}")
+        logger.info(f"completion_token_used: {response.usage.completion_tokens}")
+        logger.info(f"total_token_used: {response.usage.total_tokens}")
+        logger.info(f"response_time: { response.response_ms / 1000.0}s")
+        self.token_usage += response.usage.total_tokens
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),

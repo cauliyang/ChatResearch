@@ -254,14 +254,14 @@ def main(args):
         sort = arxiv.SortCriterion.Relevance
 
     if args.pdf_path:
-        reader1 = Reader(
+        reader = Reader(
             key_word=args.key_word,
             query=args.query,
             filter_keys=args.filter_keys,
             sort=sort,
             args=args,
         )
-        reader1.show_info()
+        reader.show_info()
         # 开始判断是路径还是文件：
         paper_list = []
         if args.pdf_path.endswith(".pdf"):
@@ -281,19 +281,21 @@ def main(args):
             name = paper_name.path.split("\\")[-1]
             logger.info(f"{paper_index=}, {name=}")
 
-        reader1.summary_with_chat(paper_list=paper_list, key_words=reader1.key_word)
+        reader.summary_with_chat(paper_list=paper_list, key_words=reader.key_word)
     else:
-        reader1 = Reader(
+        reader = Reader(
             key_word=args.key_word,
             query=args.query,
             filter_keys=args.filter_keys,
             sort=sort,
             args=args,
         )
-        reader1.show_info()
-        filter_results = reader1.filter_arxiv(max_results=args.max_results)
-        paper_list = reader1.download_pdf(filter_results)
-        reader1.summary_with_chat(paper_list=paper_list, key_words=reader1.key_word)
+        reader.show_info()
+        filter_results = reader.filter_arxiv(max_results=args.max_results)
+        paper_list = reader.download_pdf(filter_results)
+        reader.summary_with_chat(paper_list=paper_list, key_words=reader.key_word)
+
+    reader.show_token_usage()
 
 
 def cli(args):

@@ -306,6 +306,7 @@ def main(args):
 
     key_words = ",".join(reader.category)
     reader.summary_with_chat(paper_list, key_words)
+    reader.show_token_usage()
 
 
 def cli(args):
