@@ -278,7 +278,7 @@ class Result:
         path = dirpath / filename
 
         self.pdf_url = await self.get_pdf_url(session)
-        logger.info(f"Downloading PDF from {self.pdf_url}")
+        logger.info(f"Downloading: {filename}")
         async with session.get(
             self.pdf_url, headers=self.headers, raise_for_status=True
         ) as response:

@@ -415,7 +415,7 @@ class AsyncBaseReader:
 
     def show_token_usage(self):
         money = self.token_usage / 1000 * 0.002
-        logger.info(f"total_token_used: {self.token_usage} ({money:.4f} USD)")
+        logger.info(f"TOKENS: {self.token_usage} / PRICES: ${money:.6f}")
 
     def report_token_usage(self, response):
         logger.trace(f"prompt_token_used: {response.usage.prompt_tokens}")

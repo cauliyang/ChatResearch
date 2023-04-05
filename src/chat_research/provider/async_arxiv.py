@@ -215,7 +215,7 @@ class Result:
             dirpath = Path(dirpath)
 
         path = dirpath / filename
-        logger.info(f"Downloading PDF to {path}")
+        logger.info(f"Downloading: {filename}")
 
         async with session.get(
             self.pdf_url, headers=self.headers, raise_for_status=True

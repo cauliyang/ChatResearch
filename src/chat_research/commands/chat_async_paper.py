@@ -80,9 +80,11 @@ class Reader(AsyncBaseReader):
         search = self.get_arxiv(max_results=max_results)
         results = list(search.results())
 
-        logger.info("all search:")
+        logger.info("All search:")
         for index, result in enumerate(results):
-            logger.info(f"{index=}, {result.title=}, {result.updated}")
+            logger.info(
+                f"{index=}, title={result.title} {result.updated.strftime('%Y-%m-%d')}"
+            )
 
         # if self.filter_keys is empty then do not filter out
         if not self.filter_keys:
@@ -104,7 +106,10 @@ class Reader(AsyncBaseReader):
         logger.info(f"filter_results: {len(filter_results)}")
         logger.info("filter_papers:")
         for index, result in enumerate(filter_results):
-            logger.info(f"{index=}, {result.title=}, {result.updated}")
+            logger.info(
+                f"{index=}, title={result.title} {result.updated.strftime('%Y-%m-%d')}"
+            )
+
         return filter_results
 
     def download_pdf(self, filter_results):
@@ -272,15 +277,13 @@ def main(args):
             for root, dirs, files in os.walk(args.pdf):
                 logger.trace(f"root: {root}, dirs: {dirs}, files: {files}")
                 for filename in files:
-                    # 如果找到PDF文件，则将其复制到目标文件夹中
                     if filename.endswith(".pdf"):
                         paper_list.append(Paper(path=os.path.join(root, filename)))
 
         logger.info("paper_num: {}".format(len(paper_list)))
-        for paper_index, paper_name in enumerate(paper_list):
-            name = paper_name.path.split("\\")[-1]
+        for paper_index, paper in enumerate(paper_list):
+            name = Path(paper.path).name
             logger.info(f"{paper_index=}, {name=}")
-
         reader.summary_with_chat(paper_list=paper_list, key_words=reader.key_word)
     else:
         reader = Reader(

@@ -45,9 +45,9 @@ I welcome any suggestions, proposals, and pull requests.
 - [Chat Biorxiv](#chat-biorxiv): Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
 - [Chat Reviewer](#chat-reviewer): Generate summary paper with specified research fields and language.
 - [Chat Response](#chat-response): Generate response for review comment with specified language.
-- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/images/example2.md) and [PDF report](https://github.com/cauliyang/ChatResearch/blob/main/images/example1.pdf)
+- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example2.md) and [PDF report](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example1.pdf)
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/project.gif" width="800" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/project.gif" width="800" height="400">
 
 ## Installation
 
@@ -57,11 +57,11 @@ $pip install chat-research
 
 ## Usage
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/help.gif" width="800" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/help.gif" width="800" height="400">
 
 ### Chat Config
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/config.gif" width="800" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/config.gif" width="800" height="400">
 
 ```console
 ❯ chatre config
@@ -85,15 +85,15 @@ path = "files_name_in_your_repo"
 
 ### Chat Paper
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/paper.gif" width="800" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/paper.gif" width="800" height="400">
 
 ### Chat Biorxiv
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/biorxiv.gif" width="800" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/biorxiv.gif" width="800" height="400">
 
 ### Chat Response
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//tutorial/response.gif" width="800" height="400">
+<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/response.gif" width="800" height="400">
 
 ### Chat Reviewer
 

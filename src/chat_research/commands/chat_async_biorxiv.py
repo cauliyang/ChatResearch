@@ -77,9 +77,11 @@ class Reader(AsyncBaseReader):
         search = self.get_biorxiv(max_results=max_results)
         results = list(search.results())
 
-        logger.info("all search:")
+        logger.info("All search:")
         for index, result in enumerate(results):
-            logger.info(f"{index=}, {result.title=}, {result.date}")
+            logger.info(
+                f"{index=}, title={result.title} {result.date.strftime('%Y-%m-%d')}"
+            )
 
         # if self.filter_keys is empty then do not filter out
         if not self.filter_keys:
@@ -103,7 +105,9 @@ class Reader(AsyncBaseReader):
         logger.info(f"filter_results: {len(filter_results)}")
         logger.info("filter_papers:")
         for index, result in enumerate(filter_results):
-            logger.info(f"{index=}, {result.title=}, {result.date}")
+            logger.info(
+                f"{index=}, title={result.title} {result.date.strftime('%Y-%m-%d')}"
+            )
 
         return filter_results
 
