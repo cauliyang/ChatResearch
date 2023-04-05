@@ -1,5 +1,6 @@
 # https://github.com/Wandmalfarbe/pandoc-latex-template
 import asyncio
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
@@ -15,11 +16,11 @@ async def run(cmd):
 
     stdout, stderr = await proc.communicate()
 
-    print(f"[{cmd!r} exited with {proc.returncode}]")
+    logger.trace(f"[{cmd!r} exited with {proc.returncode}]")
     if stdout:
-        print(f"[stdout]\n{stdout.decode()}")
+        logger.trace(f"[stdout]\n{stdout.decode()}")
     if stderr:
-        print(f"[stderr]\n{stderr.decode()}")
+        logger.error(f"[stderr]\n{stderr.decode()}")
 
 
 async def amd2pdf(md_file: Path, pdf_file: Path) -> bool:
@@ -28,12 +29,14 @@ async def amd2pdf(md_file: Path, pdf_file: Path) -> bool:
 
     cmd = [
         "pandoc",
-        md_file,
+        md_file.as_posix(),
         "-o",
-        pdf_file,
+        pdf_file.as_posix(),
     ]
+
+    _cmd = shlex.join(cmd)
     try:
-        await run(" ".join(cmd))
+        await run(_cmd)
     except subprocess.CalledProcessError:
         logger.warning("failed to output pdf then fall back to md")
         return False

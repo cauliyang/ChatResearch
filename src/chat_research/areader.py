@@ -10,7 +10,7 @@ import tenacity
 import tiktoken
 from loguru import logger
 
-from .export import export
+from .aexport import aexport
 from .paper_with_image import Paper
 from .utils import load_config, report_token_usage
 
@@ -82,7 +82,8 @@ class AsyncBaseReader:
         htmls.append(chat_summary_text)
 
         # 第二步总结方法：
-        # TODO，由于有些文章的方法章节名是算法名，所以简单的通过关键词来筛选，很难获取，后面需要用其他的方案去优化。
+        # WARNING，由于有些文章的方法章节名是算法名，
+        # 所以简单的通过关键词来筛选，很难获取，后面需要用其他的方案去优化。
         method_key = ""
         for parse_key in paper.section_text_dict.keys():
             if "method" in parse_key.lower() or "approach" in parse_key.lower():
@@ -122,6 +123,7 @@ class AsyncBaseReader:
             htmls.append(chat_method_text)
         else:
             chat_method_text = ""
+
         htmls.append("\n" * 4)
 
         # 第三步总结全文，并打分：
@@ -182,7 +184,7 @@ class AsyncBaseReader:
             Path(export_path) / f"{date_str}-{self.validateTitle(paper.title[:80])}"
         )
 
-        export(
+        await aexport(
             content="\n".join([item.strip() for item in htmls]),
             file_name=file_name.with_suffix(f".{self.file_format}"),
         )
