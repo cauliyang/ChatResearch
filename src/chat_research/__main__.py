@@ -9,7 +9,6 @@ from . import (
     chat_async_biorxiv,
     chat_async_paper,
     chat_config,
-    chat_paper,
     chat_response,
     chat_reviewer,
 )
@@ -70,7 +69,6 @@ def cli():
     chat_reviewer_command = chat_reviewer.add_subcommand(subparser)
     chat_arxiv_command = chat_arxiv.add_subcommnd(subparser)
     chat_response_command = chat_response.add_subcommand(subparser)
-    chat_paper_command = chat_paper.add_subcommand(subparser)
     chat_config_command = chat_config.add_subcommand(subparser)
     chat_async_biorxiv_command = chat_async_biorxiv.add_subcommand(subparser)
     chat_async_paper_command = chat_async_paper.add_subcommand(subparser)
@@ -96,9 +94,7 @@ def cli():
         parser.print_help()
         raise SystemExit
 
-    if args.subcommand == chat_paper_command:
-        chat_paper.cli(args)
-    elif args.subcommand == chat_arxiv_command:
+    if args.subcommand == chat_arxiv_command:
         chat_arxiv.cli(args)
     elif args.subcommand == chat_response_command:
         chat_response.cli(args)
