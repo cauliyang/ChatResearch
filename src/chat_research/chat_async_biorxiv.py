@@ -1,12 +1,13 @@
+import asyncio
 import datetime
 from typing import Optional
 
-import tenacity
+import aiohttp
 from loguru import logger
 from pydantic import BaseModel
 
 from .paper_with_image import Paper
-from .provider import biorxiv
+from .provider import async_biorxiv as biorxiv
 from .reader import BaseReader
 
 
@@ -107,47 +108,49 @@ class Reader(BaseReader):
         return filter_results
 
     def download_pdf(self, filter_results):
-        # 先创建文件夹
+        asyncio.run(self._download_pdf(filter_results))
+
+    @staticmethod
+    def create_paper(results_mapping, paper_path):
+        result = results_mapping[paper_path.name]
+        paper = Paper(
+            path=paper_path,
+            url=result.entry_id,
+            title=result.title,
+            abs=result.abstract.replace("-\n", "-").replace("\n", " "),
+            authers=[str(aut) for aut in result.authors.split(",")],
+        )
+
+        return paper
+
+    async def _download_pdf(self, filter_results):
         date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
-
         category_str = "-".join([c for c in self.category])
-
         path = self.root_path / "pdf_files" / f"{category_str}-{date_str}"
         path.mkdir(parents=True, exist_ok=True)
 
         logger.info(f"All_paper: {len(filter_results)}")
-        # 开始下载：
+
         paper_list = []
-        for _, result in enumerate(filter_results):
-            try:
+        tasks = []
+        results_mapping = {}
+
+        async with aiohttp.ClientSession() as session:
+            for _, result in enumerate(filter_results):
                 title_str = self.validateTitle(result.title)
                 pdf_name = title_str + ".pdf"
-                self.try_download_pdf(result, path.as_posix(), pdf_name)
-                paper_path = path / pdf_name
+                tasks.append(result.download_pdf(session, path.as_posix(), pdf_name))
+                results_mapping[pdf_name] = result
 
-                logger.trace(f"{paper_path=}")
-                paper = Paper(
-                    path=paper_path,
-                    url=result.entry_id,
-                    title=result.title,
-                    abs=result.abstract.replace("-\n", "-").replace("\n", " "),
-                    authers=[str(aut) for aut in result.authors.split(",")],
-                )
-                paper_list.append(paper)
+            for done_task in asyncio.as_completed(tasks):
+                try:
+                    paper_path = await done_task
+                    paper_list.append(self.create_paper(results_mapping, paper_path))
 
-            except Exception as e:
-                logger.warning(f"download_error: {e}")
-                pass
+                except Exception as e:
+                    logger.warning(f"download_error: {e}")
 
         return paper_list
-
-    @tenacity.retry(
-        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-        stop=tenacity.stop_after_attempt(5),
-        reraise=True,
-    )
-    def try_download_pdf(self, result, path, pdf_name):
-        result.download_pdf(path, filename=pdf_name)
 
     def show_info(self):
         categories = ",".join(self.category)
@@ -299,12 +302,13 @@ def main(args):
 
     reader.show_info()
     filter_results = reader.filter_arxiv(max_results=args.max_results)
-    paper_list = reader.download_pdf(filter_results)
-    key_words = ",".join(reader.category)
-    reader.summary_with_chat(
-        paper_list,
-        key_words,
-    )
+    reader.download_pdf(filter_results)
+    ",".join(reader.category)
+
+    # reader.summary_with_chat(
+    #     paper_list,
+    #     key_words,
+    # )
 
 
 def cli(args):
