@@ -6,9 +6,9 @@ import aiohttp
 from loguru import logger
 from pydantic import BaseModel
 
+from ..areader import AsyncBaseReader
 from ..paper_with_image import Paper
 from ..provider import async_biorxiv as biorxiv
-from ..reader import BaseReader
 
 
 class Params(BaseModel):
@@ -24,7 +24,7 @@ class Params(BaseModel):
     language: str
 
 
-class Reader(BaseReader):
+class Reader(AsyncBaseReader):
     def __init__(
         self,
         category: list[str],
@@ -303,11 +303,9 @@ def main(args):
     reader.show_info()
     filter_results = reader.filter_arxiv(max_results=args.max_results)
     paper_list = reader.download_pdf(filter_results)
+
     key_words = ",".join(reader.category)
-    reader.summary_with_chat(
-        paper_list,
-        key_words,
-    )
+    reader.summary_with_chat(paper_list, key_words)
 
 
 def cli(args):

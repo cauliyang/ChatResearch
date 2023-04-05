@@ -4,8 +4,8 @@ __PACKAGE_NAME__ = "chat-research"
 
 from rich.traceback import install
 
-from . import async_reader, paper, paper_with_image, utils
+from . import areader, paper, paper_with_image, utils
 
 install()
 
-__all__ = ["paper", "paper_with_image", "utils", "async_reader"]
+__all__ = ["paper", "paper_with_image", "utils", "areader"]

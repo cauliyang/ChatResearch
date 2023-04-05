@@ -4,9 +4,8 @@ from pathlib import Path
 
 from loguru import logger
 
+
 # https://github.com/Wandmalfarbe/pandoc-latex-template
-
-
 def export(content: str, file_name: Path, keep_md: bool = False):
     if file_name.suffix == ".md" or file_name.suffix == ".txt":
         export_to_markdown(content, file_name, mode="w")

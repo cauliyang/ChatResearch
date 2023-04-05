@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import datetime
 import re
@@ -10,6 +11,7 @@ import tiktoken
 from loguru import logger
 
 from .export import export
+from .paper_with_image import Paper
 from .utils import load_config, report_token_usage
 
 
@@ -30,121 +32,78 @@ class AsyncBaseReader:
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
 
-    async def summary_with_chat(self, paper_list, key_words):
+    async def _summary_with_chat(self, paper_list: list[Paper], key_words):
+        await asyncio.gather(
+            *[
+                self.summary_with_chat_for_one_paper(paper, index, key_words)
+                for index, paper in enumerate(paper_list)
+            ]
+        )
+
+    def summary_with_chat(self, paper_list: list[Paper], key_words):
+        asyncio.run(self._summary_with_chat(paper_list, key_words))
+
+    async def summary_with_chat_for_one_paper(
+        self, paper: Paper, paper_index: int, key_words
+    ):
         htmls = []
-        for paper_index, paper in enumerate(paper_list):
-            # 第一步先用title，abs，和introduction进行总结。
-            text = ""
-            text += "Title:" + paper.title
-            text += "Url:" + paper.url
-            text += "Abstrat:" + paper.abs
-            text += "Paper_info:" + paper.section_text_dict["paper_info"]
-            # intro
-            text += list(paper.section_text_dict.values())[0]
-            chat_summary_text = ""
+        # 第一步先用title，abs，和introduction进行总结。
+        text = ""
+        text += "Title:" + paper.title
+        text += "Url:" + paper.url
+        text += "Abstrat:" + paper.abs
+        text += "Paper_info:" + paper.section_text_dict["paper_info"]
+        # intro
+        text += list(paper.section_text_dict.values())[0]
+        chat_summary_text = ""
 
-            try:
+        try:
+            chat_summary_text = await self.chat_summary(text=text, key_words=key_words)
+        except Exception as e:
+            logger.warning(f"summary_error: {e}")
+            if "maximum context" in str(e):
+                current_tokens_index = (
+                    str(e).find("your messages resulted in")
+                    + len("your messages resulted in")
+                    + 1
+                )
+                offset = int(str(e)[current_tokens_index : current_tokens_index + 4])
+                summary_prompt_token = offset + 1000 + 150
                 chat_summary_text = await self.chat_summary(
-                    text=text, key_words=key_words
+                    text=text,
+                    key_words=key_words,
+                    summary_prompt_token=summary_prompt_token,
                 )
-            except Exception as e:
-                logger.warning(f"summary_error: {e}")
-                if "maximum context" in str(e):
-                    current_tokens_index = (
-                        str(e).find("your messages resulted in")
-                        + len("your messages resulted in")
-                        + 1
-                    )
-                    offset = int(
-                        str(e)[current_tokens_index : current_tokens_index + 4]
-                    )
-                    summary_prompt_token = offset + 1000 + 150
-                    chat_summary_text = await self.chat_summary(
-                        text=text,
-                        key_words=key_words,
-                        summary_prompt_token=summary_prompt_token,
-                    )
-                else:
-                    raise e
-
-            htmls.append("## Paper:" + str(paper_index + 1))
-            htmls.append("\n\n\n")
-            htmls.append(chat_summary_text)
-
-            # 第二步总结方法：
-            # TODO，由于有些文章的方法章节名是算法名，所以简单的通过关键词来筛选，很难获取，后面需要用其他的方案去优化。
-            method_key = ""
-            for parse_key in paper.section_text_dict.keys():
-                if "method" in parse_key.lower() or "approach" in parse_key.lower():
-                    method_key = parse_key
-                    break
-
-            if method_key != "":
-                text = ""
-                method_text = ""
-                summary_text = ""
-                summary_text += "<summary>" + chat_summary_text
-                # methods
-                method_text += paper.section_text_dict[method_key]
-                text = summary_text + "\n\n<Methods>:\n\n" + method_text
-                chat_method_text = ""
-                try:
-                    chat_method_text = await self.chat_method(
-                        text=text, key_words=key_words
-                    )
-                except Exception as e:
-                    logger.error(f"method_error: {e}")
-                    if "maximum context" in str(e):
-                        current_tokens_index = (
-                            str(e).find("your messages resulted in")
-                            + len("your messages resulted in")
-                            + 1
-                        )
-                        offset = int(
-                            str(e)[current_tokens_index : current_tokens_index + 4]
-                        )
-                        method_prompt_token = offset + 800 + 150
-                        chat_method_text = await self.chat_method(
-                            text=text,
-                            key_words=key_words,
-                            method_prompt_token=method_prompt_token,
-                        )
-                htmls.append(chat_method_text)
             else:
-                chat_method_text = ""
-            htmls.append("\n" * 4)
+                raise e
 
-            # 第三步总结全文，并打分：
-            conclusion_key = ""
-            for parse_key in paper.section_text_dict.keys():
-                if "conclu" in parse_key.lower():
-                    conclusion_key = parse_key
-                    break
+        htmls.append("## Paper:" + str(paper_index + 1))
+        htmls.append("\n\n\n")
+        htmls.append(chat_summary_text)
 
+        # 第二步总结方法：
+        # TODO，由于有些文章的方法章节名是算法名，所以简单的通过关键词来筛选，很难获取，后面需要用其他的方案去优化。
+        method_key = ""
+        for parse_key in paper.section_text_dict.keys():
+            if "method" in parse_key.lower() or "approach" in parse_key.lower():
+                method_key = parse_key
+                break
+
+        if method_key != "":
             text = ""
-            conclusion_text = ""
+            method_text = ""
             summary_text = ""
-            summary_text += (
-                "<summary>"
-                + chat_summary_text
-                + "\n <Method summary>:\n"
-                + chat_method_text
-            )
-
-            if conclusion_key != "":
-                # conclusion
-                conclusion_text += paper.section_text_dict[conclusion_key]
-                text = summary_text + "\n\n<Conclusion>:\n\n" + conclusion_text
-            else:
-                text = summary_text
-
-            chat_conclusion_text = ""
+            summary_text += "<summary>" + chat_summary_text
+            # methods
+            method_text += paper.section_text_dict[method_key]
+            text = summary_text + "\n\n<Methods>:\n\n" + method_text
+            chat_method_text = ""
             try:
-                chat_conclusion_text = await self.chat_conclusion(
+                chat_method_text = await self.chat_method(
                     text=text, key_words=key_words
                 )
             except Exception as e:
-                logger.info(f"conclusion_error: {e}")
+                logger.error(f"method_error: {e}")
                 if "maximum context" in str(e):
                     current_tokens_index = (
                         str(e).find("your messages resulted in")
@@ -154,32 +113,79 @@ class AsyncBaseReader:
                     offset = int(
                         str(e)[current_tokens_index : current_tokens_index + 4]
                     )
-                    conclusion_prompt_token = offset + 800 + 150
-                    chat_conclusion_text = await self.chat_conclusion(
+                    method_prompt_token = offset + 800 + 150
+                    chat_method_text = await self.chat_method(
                         text=text,
                         key_words=key_words,
-                        conclusion_prompt_token=conclusion_prompt_token,
+                        method_prompt_token=method_prompt_token,
                     )
-            htmls.append(chat_conclusion_text)
-            htmls.append("\n" * 4)
+            htmls.append(chat_method_text)
+        else:
+            chat_method_text = ""
+        htmls.append("\n" * 4)
 
-            # # 整合成一个文件，打包保存下来。
-            date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
-            export_path = self.root_path / "export"
+        # 第三步总结全文，并打分：
+        conclusion_key = ""
+        for parse_key in paper.section_text_dict.keys():
+            if "conclu" in parse_key.lower():
+                conclusion_key = parse_key
+                break
 
-            if not export_path.exists():
-                export_path.mkdir(parents=True, exist_ok=True)
+        text = ""
+        conclusion_text = ""
+        summary_text = ""
+        summary_text += (
+            "<summary>"
+            + chat_summary_text
+            + "\n <Method summary>:\n"
+            + chat_method_text
+        )
 
-            file_name = (
-                Path(export_path) / f"{date_str}-{self.validateTitle(paper.title[:80])}"
+        if conclusion_key != "":
+            # conclusion
+            conclusion_text += paper.section_text_dict[conclusion_key]
+            text = summary_text + "\n\n<Conclusion>:\n\n" + conclusion_text
+        else:
+            text = summary_text
+
+        chat_conclusion_text = ""
+        try:
+            chat_conclusion_text = await self.chat_conclusion(
+                text=text, key_words=key_words
             )
+        except Exception as e:
+            logger.info(f"conclusion_error: {e}")
+            if "maximum context" in str(e):
+                current_tokens_index = (
+                    str(e).find("your messages resulted in")
+                    + len("your messages resulted in")
+                    + 1
+                )
+                offset = int(str(e)[current_tokens_index : current_tokens_index + 4])
+                conclusion_prompt_token = offset + 800 + 150
+                chat_conclusion_text = await self.chat_conclusion(
+                    text=text,
+                    key_words=key_words,
+                    conclusion_prompt_token=conclusion_prompt_token,
+                )
+        htmls.append(chat_conclusion_text)
+        htmls.append("\n" * 4)
 
-            export(
-                content="\n".join([item.strip() for item in htmls]),
-                file_name=file_name.with_suffix(f".{self.file_format}"),
-            )
+        # # 整合成一个文件，打包保存下来。
+        date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
+        export_path = self.root_path / "export"
 
-            htmls = []
+        if not export_path.exists():
+            export_path.mkdir(parents=True, exist_ok=True)
+
+        file_name = (
+            Path(export_path) / f"{date_str}-{self.validateTitle(paper.title[:80])}"
+        )
+
+        export(
+            content="\n".join([item.strip() for item in htmls]),
+            file_name=file_name.with_suffix(f".{self.file_format}"),
+        )
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
@@ -306,11 +312,12 @@ class AsyncBaseReader:
 
         return result
 
-    @tenacity.retry(
-        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-        stop=tenacity.stop_after_attempt(5),
-        reraise=True,
-    )
+    # @tenacity.retry(
+    #     wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
+    #     stop=tenacity.stop_after_attempt(5),
+    #     reraise=True,
+    # )
+
     async def chat_summary(self, text, key_words, summary_prompt_token=1100):
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
