@@ -36,6 +36,7 @@ I welcome any suggestions, proposals, and pull requests.
 - [ ] Generate Image
 - [ ] Add RSS support for multiple journal
 - [ ] Revise help message
+- [ ] add classic paper as examples
 
 ## Features
 
