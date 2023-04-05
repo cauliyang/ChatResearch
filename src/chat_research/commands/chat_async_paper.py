@@ -1,21 +1,23 @@
+import asyncio
 import datetime
 import os
 from pathlib import Path
+from typing import Optional
 
-import arxiv
-import tenacity
+import aiohttp
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from ..paper_with_image import Paper
-from ..reader import BaseReader
+from .paper_with_image import Paper
+from .provider import async_arxiv as arxiv
+from .reader import BaseReader
 
 
 class PaperParams(BaseModel):
     pdf_path: str
     query: str
     key_word: str
-    filter_keys: str
+    filter_keys: Optional[list[str]] = None
     max_results: int
     sort: str
     save_image: bool
@@ -76,24 +78,29 @@ class Reader(BaseReader):
 
     def filter_arxiv(self, max_results=30):
         search = self.get_arxiv(max_results=max_results)
+        results = list(search.results())
+
         logger.info("all search:")
-        for index, result in enumerate(search.results()):
+        for index, result in enumerate(results):
             logger.info(f"{index=}, {result.title=}, {result.updated}")
 
+        # if self.filter_keys is empty then do not filter out
+        if not self.filter_keys:
+            return results
+
         filter_results = []
-        filter_keys = self.filter_keys
 
         logger.info(f"filter_keys {self.filter_keys}")
         # 确保每个关键词都能在摘要中找到，才算是目标论文
         for index, result in enumerate(search.results()):
             abs_text = result.summary.replace("-\n", "-").replace("\n", " ")
             meet_num = 0
-            for f_key in filter_keys.split(" "):
+            for f_key in self.filter_keys:
                 if f_key.lower() in abs_text.lower():
                     meet_num += 1
-            if meet_num == len(filter_keys.split(" ")):
+            if meet_num == len(self.filter_keys):
                 filter_results.append(result)
-                # break
+
         logger.info(f"filter_results: {len(filter_results)}")
         logger.info("filter_papers:")
         for index, result in enumerate(filter_results):
@@ -101,9 +108,22 @@ class Reader(BaseReader):
         return filter_results
 
     def download_pdf(self, filter_results):
-        # 先创建文件夹
-        date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
+        return asyncio.run(self._download_pdf(filter_results))
 
+    @staticmethod
+    def create_paper(results_mapping, paper_path):
+        result = results_mapping[paper_path.name]
+        paper = Paper(
+            path=paper_path,
+            url=result.entry_id,
+            title=result.title,
+            abs=result.summary.replace("-\n", "-").replace("\n", " "),
+            authers=[str(aut) for aut in result.authors],
+        )
+        return paper
+
+    async def _download_pdf(self, filter_results):
+        date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
         query_str = (
             self.query.replace("au:", "")
             .replace("title: ", "")
@@ -112,44 +132,30 @@ class Reader(BaseReader):
         )
 
         path = self.root_path / "pdf_files" / f"{query_str}-{date_str}"
+
         path.mkdir(parents=True, exist_ok=True)
-
         logger.info(f"All_paper: {len(filter_results)}")
-        # 开始下载：
-        paper_list = []
 
-        for _, result in enumerate(filter_results):
-            try:
+        paper_list = []
+        tasks = []
+        results_mapping = {}
+
+        async with aiohttp.ClientSession() as session:
+            for _, result in enumerate(filter_results):
                 title_str = self.validateTitle(result.title)
                 pdf_name = title_str + ".pdf"
-                # result.download_pdf(path, filename=pdf_name)
-                self.try_download_pdf(result, path.as_posix(), pdf_name)
+                tasks.append(result.download_pdf(session, path.as_posix(), pdf_name))
+                results_mapping[pdf_name] = result
 
-                paper_path = path / pdf_name
+            for done_task in asyncio.as_completed(tasks):
+                try:
+                    paper_path = await done_task
+                    paper_list.append(self.create_paper(results_mapping, paper_path))
 
-                logger.info(f"{paper_path=}")
+                except Exception as e:
+                    logger.warning(f"download_error: {e}")
 
-                paper = Paper(
-                    path=paper_path,
-                    url=result.entry_id,
-                    title=result.title,
-                    abs=result.summary.replace("-\n", "-").replace("\n", " "),
-                    authers=[str(aut) for aut in result.authors],
-                )
-
-                paper_list.append(paper)
-            except Exception as e:
-                logger.warning(f"download_error: {e}")
-                pass
         return paper_list
-
-    @tenacity.retry(
-        wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-        stop=tenacity.stop_after_attempt(5),
-        reraise=True,
-    )
-    def try_download_pdf(self, result, path, pdf_name):
-        result.download_pdf(path, filename=pdf_name)
 
     def show_info(self):
         logger.info(f"Key word: {self.key_word}")
@@ -158,7 +164,7 @@ class Reader(BaseReader):
 
 
 def add_subcommand(parser):
-    name = "paper"
+    name = "asyncpaper"
     subparser = parser.add_parser(
         name, help="Fetch or Summary paper from local or arxiv"
     )
@@ -189,9 +195,10 @@ def add_subcommand(parser):
     subparser.add_argument(
         "--filter-keys",
         type=str,
-        default="ChatGPT robot",
+        action="extend",
+        nargs="+",
         metavar="",
-        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper (default: %(default)s)",
+        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper",
     )
 
     subparser.add_argument(
