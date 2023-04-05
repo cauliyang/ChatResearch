@@ -8,9 +8,9 @@ import aiohttp
 from loguru import logger
 from pydantic import BaseModel, validator
 
+from ..areader import AsyncBaseReader
 from ..paper_with_image import Paper
 from ..provider import async_arxiv as arxiv
-from ..reader import BaseReader
 
 
 class PaperParams(BaseModel):
@@ -32,7 +32,7 @@ class PaperParams(BaseModel):
 
 
 # 定义Reader类
-class Reader(BaseReader):
+class Reader(AsyncBaseReader):
     # 初始化方法，设置属性
     def __init__(
         self,

@@ -2,14 +2,13 @@
 import asyncio
 import shlex
 import shutil
-import subprocess
 from pathlib import Path
 
 import aiofiles
 from loguru import logger
 
 
-async def run(cmd):
+async def run(cmd) -> bool:
     proc = await asyncio.create_subprocess_shell(
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
@@ -21,6 +20,8 @@ async def run(cmd):
         logger.trace(f"[stdout]\n{stdout.decode()}")
     if stderr:
         logger.error(f"[stderr]\n{stderr.decode()}")
+
+    return True if proc.returncode == 0 else False
 
 
 async def amd2pdf(md_file: Path, pdf_file: Path) -> bool:
@@ -35,13 +36,12 @@ async def amd2pdf(md_file: Path, pdf_file: Path) -> bool:
     ]
 
     _cmd = shlex.join(cmd)
-    try:
-        await run(_cmd)
-    except subprocess.CalledProcessError:
+    is_success = await run(_cmd)
+
+    if not is_success:
         logger.warning("failed to output pdf then fall back to md")
-        return False
-    else:
-        return True
+
+    return is_success
 
 
 async def aexport(content: str, file_name: Path, keep_md: bool = False):
