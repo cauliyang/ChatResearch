@@ -10,16 +10,15 @@ import tiktoken
 from loguru import logger
 
 from .export import export
-from .utils import load_config, report_token_usage
+from .utils import load_config
 
 
 class BaseReader:
-    def __init__(self, filter_keys, root_path, language, file_format, save_image):
+    def __init__(self, root_path, language, file_format, save_image):
         self.root_path = Path(root_path)
         self.language = language
         self.file_format = file_format
 
-        self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
         self.config, self.chat_api_list = load_config()
         self.cur_api = 0
 
@@ -27,6 +26,7 @@ class BaseReader:
 
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
+        self.token_usage = 0
 
     def summary_with_chat(self, paper_list, key_words):
         htmls = []
@@ -230,8 +230,9 @@ class BaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"conclusion_result:\n{result}")
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -292,8 +293,10 @@ class BaseReader:
         result = ""
         for choice in response.choices:
             result += choice.message.content
+
+        result = self.format_text(result)
         logger.trace(f"method_result:\n{result}")
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -326,13 +329,13 @@ class BaseReader:
             },
             {
                 "role": "user",
-                "content": """
-                 1. Mark the title of the paper (with Chinese translation)
+                "content": f"""
+                 1. Mark the title of the paper
                  2. list all the authors' names (use English)
-                 3. mark the first author's affiliation (output {} translation only)
+                 3. mark the first author's affiliation (use English)
                  4. mark the keywords of this article (use English)
                  5. link to the paper, Github code link (if available, fill in Github:None if not)
-                 6. summarize according to the following four points.Be sure to use {} answers (proper nouns need to be marked in English)
+                 6. summarize according to the following four points.Be sure to use {self.language} answers (proper nouns need to be marked in English)
                     - (1):What is the research background of this article?
                     - (2):What are the past methods? What are the problems with them? Is the approach well motivated?
                     - (3):What is the research methodology proposed in this paper?
@@ -349,10 +352,9 @@ class BaseReader:
                     - (3):xxx;\n
                     - (4):xxx.\n\n
 
-                 Be sure to use {} answers (proper nouns need to be marked in English), statements as concise and academic as possible, do not have too much repetitive information, numerical values using the original numbers, be sure to strictly follow the format, the corresponding content output to xxx, in accordance with \n line feed.
-                 """.format(
-                    self.language, self.language, self.language
-                ),
+                 Be sure to use {self.language} answers (proper nouns need to be marked in English), statements as concise and academic as possible, do not have too much repetitive information, numerical values using the original numbers, be sure to strictly follow the format,
+                 the corresponding content output to xxx, in accordance with \n line feed.
+                 """,
             },
         ]
 
@@ -364,9 +366,10 @@ class BaseReader:
         for choice in response.choices:
             result += choice.message.content
 
+        result = self.format_text(result)
         logger.trace(f"summary_result:\n{result}")
 
-        report_token_usage(response)
+        self.report_token_usage(response)
 
         return result
 
@@ -375,6 +378,24 @@ class BaseReader:
         rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
         return new_title
+
+    @staticmethod
+    def format_text(text):
+        result = ""
+        for line in text.split("\n"):
+            result += line.strip() + "\n"
+        return result
+
+    def show_token_usage(self):
+        money = self.token_usage / 1000 * 0.002
+        logger.info(f"total_token_used: {self.token_usage} ({money} USD)")
+
+    def report_token_usage(self, response):
+        logger.info(f"prompt_token_used: {response.usage.prompt_tokens}")
+        logger.info(f"completion_token_used: {response.usage.completion_tokens}")
+        logger.info(f"total_token_used: {response.usage.total_tokens}")
+        logger.info(f"response_time: { response.response_ms / 1000.0}s")
+        self.token_usage += response.usage.total_tokens
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),

@@ -69,11 +69,14 @@ class Paper:
                         point_split_list[0] in self.roman_num
                         or point_split_list[0] in self.digit_num
                     ):
-                        # print("line:", line)
                         chapter_names.append(line)
 
         return chapter_names
 
+    def fetch_title(self):
+        return self.pdf.metadata["title"]
+
+    # WARN: CHange that to use meta <04-05-23, Yangyang Li>
     def get_title(self):
         doc = self.pdf  # 打开pdf文件
         max_font_size = 0  # 初始化最大字体大小为0
@@ -92,7 +95,6 @@ class Paper:
                             max_font_size = font_size  # 更新最大值
                             block["lines"][0]["spans"][0]["text"]  # 更新最大值对应的字符串
         max_font_sizes.sort()
-        # print("max_font_sizes", max_font_sizes[-10:])
         cur_title = ""
         for page_index, page in enumerate(doc):  # 遍历每一页
             text = page.get_text("dict")  # 获取页面上的文本信息

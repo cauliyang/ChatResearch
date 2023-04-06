@@ -4,6 +4,8 @@ from pathlib import Path
 import toml
 from loguru import logger
 
+CONFIG_FILE_NAME = "chatre.toml"
+
 
 def report_token_usage(response):
     logger.info(f"prompt_token_used: {response.usage.prompt_tokens}")
@@ -13,8 +15,8 @@ def report_token_usage(response):
 
 
 def load_config():
-    default_path = Path.cwd() / "apikey.toml"
-    global_path = Path.home() / ".config" / "apikey.toml"
+    default_path = Path.cwd() / CONFIG_FILE_NAME
+    global_path = Path.home() / ".config" / CONFIG_FILE_NAME
 
     if default_path.exists():
         config = toml.load(default_path)

@@ -37,6 +37,11 @@ class Paper:
         self.digit_num = [str(d + 1) for d in range(10)]
         self.first_image = ""
 
+    def __repr__(self):
+        return f"""Papers(title={self.title}, url={self.url}, authers={self.authers} abs={self.abs})"""
+
+    __str__ = __repr__
+
     def parse_pdf(self):
         self.pdf = fitz.open(self.path)  # pdf文档
         self.text_list = [page.get_text() for page in self.pdf]
