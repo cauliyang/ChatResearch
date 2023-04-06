@@ -76,7 +76,6 @@ class Paper:
     def fetch_title(self):
         return self.pdf.metadata["title"]
 
-    # WARN: CHange that to use meta <04-05-23, Yangyang Li>
     def get_title(self):
         doc = self.pdf  # 打开pdf文件
         max_font_size = 0  # 初始化最大字体大小为0

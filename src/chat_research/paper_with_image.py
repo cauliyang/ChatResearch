@@ -8,7 +8,6 @@ from PIL import Image
 
 class Paper:
     def __init__(self, path, title="", url="", abs="", authers=[]):
-        # 初始化函数，根据pdf路径初始化Paper对象
         self.url = url  # 文章链接
         self.path = path  # pdf路径
         self.section_names = []  # 段落标题
@@ -34,6 +33,7 @@ class Paper:
             "IX",
             "X",
         ]
+
         self.digit_num = [str(d + 1) for d in range(10)]
         self.first_image = ""
 
