@@ -30,7 +30,7 @@ test-full: ## Run all tests
 
 commit: format ## commit
 	git add .
-	aic
+	oc
 
 install: ## install the lib
 	poetry install
