@@ -1,0 +1,7 @@
+poetry.lock
+**/*.pdf
+**/*.gif
+**/*.png
+**/*.jpg
+**/*.md
+**/*.tex
