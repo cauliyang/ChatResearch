@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - 🔧 chore(cliff.toml): update commit_parsers regex to match any commit message starting with feat, fix, doc, perf, refactor, style, test, chore, and ending with any character. Update filter_unconventional to false and split_commits to true.
+- 🚀 feat(.opencommitignore): add file to ignore certain file types in commits
 
 ### Miscellaneous Tasks
 

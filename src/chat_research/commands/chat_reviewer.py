@@ -236,6 +236,7 @@ def add_subcommand(parser):
     name = "reviewer"
     subparser = parser.add_parser(name, help="Summary paper")
     subparser.add_argument(
+        "-p",
         "--paper-path",
         type=str,
         metavar="",
@@ -244,16 +245,17 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
+        "-f",
         "--file-format",
         type=str,
-        default="txt",
+        default="md",
         choices=["txt", "md"],
         metavar="",
         help="output file format (default: %(default)s)",
     )
 
     subparser.add_argument(
-        "--review-format", type=str, metavar="", help="review format"
+        "-r", "--review-format", type=str, metavar="", help="review format"
     )
 
     subparser.add_argument(
@@ -265,6 +267,7 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
+        "-l",
         "--language",
         type=str,
         default="en",

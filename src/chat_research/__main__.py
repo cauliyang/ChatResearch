@@ -36,7 +36,7 @@ class RichArgParser(argparse.ArgumentParser):
             self.console.print(self._color_message(message))
 
 
-class RichHelpFormatter(argparse.HelpFormatter):
+class RichHelpFormatter(argparse.RawDescriptionHelpFormatter):
     """RichHelpFormatter."""
 
     def __init__(self, *args: Any, **kwargs: Any):
@@ -48,9 +48,18 @@ def _cli():
     parser = RichArgParser(
         description="[red]chatre[/] Use ChatGPT to accelerate research",
         formatter_class=RichHelpFormatter,
+        epilog="""example usage:
+    Read one paper from local path and export result as md
+        chatre paper --pdf example.pdf
+    Read one paper from local path and export result as pdf
+        chatre paper --pdf example.pdf --file-format pdf
+    Reader papers from local directory recursively
+        chatre paper --pdf example/
+    """,
     )
 
     parser.add_argument(
+        "-l",
         "--log-level",
         type=str,
         default="info",

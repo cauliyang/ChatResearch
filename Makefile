@@ -34,3 +34,7 @@ commit: format ## commit
 
 install: ## install the lib
 	poetry install
+
+change: ## generate changelog
+	git pull --tags
+	git cliff --output CHANGELOG.md

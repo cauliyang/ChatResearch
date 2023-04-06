@@ -13,7 +13,6 @@ from chat_research.utils import report_token_usage
 from ..utils import load_config
 
 
-# ChatResponse
 class ResponseParams(BaseModel):
     comment_path: str
     file_format: str
@@ -26,9 +25,7 @@ class ResponseParams(BaseModel):
         return v
 
 
-# 定义Response类
 class Response:
-    # 初始化方法，设置属性
     def __init__(self, args=None):
         if args is None:
             raise ValueError("args is None")
@@ -49,7 +46,6 @@ class Response:
 
     def response_by_chatgpt(self, comment_path):
         htmls = []
-        # 读取回复的内容
         with open(comment_path, "r", encoding="utf-8") as f:
             comments = f.read()
 
@@ -151,6 +147,7 @@ def add_subcommand(parser):
     name = "response"
     subparser = parser.add_parser(name, help="Generate reponse for review comment")
     subparser.add_argument(
+        "-p",
         "--comment-path",
         type=str,
         metavar="",
@@ -158,13 +155,16 @@ def add_subcommand(parser):
         required=True,
     )
     subparser.add_argument(
+        "-f",
         "--file-format",
         type=str,
         default="txt",
         metavar="",
         help="output file format (default: %(default)s)",
     )
+
     subparser.add_argument(
+        "-l",
         "--language",
         type=str,
         default="en",

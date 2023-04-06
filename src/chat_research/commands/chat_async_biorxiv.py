@@ -201,17 +201,6 @@ def add_subcommand(parser):
     name = "biorxiv"
     subparser = parser.add_parser(name, help="Fetch and Summary paper from bioarxiv")
 
-    subparser.add_argument(
-        "--category",
-        type=str,
-        default="bioinformatics",
-        choices=CATEGORY_LIST,
-        action="extend",
-        nargs="+",
-        metavar="",
-        help="the category of user research fields (default: %(default)s)",
-    )
-
     group = subparser.add_mutually_exclusive_group()
     group.add_argument(
         "--date",
@@ -238,15 +227,7 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
-        "--filter-keys",
-        type=str,
-        action="extend",
-        nargs="+",
-        metavar="",
-        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper",
-    )
-
-    subparser.add_argument(
+        "-m",
         "--max-results",
         type=int,
         default=20,
@@ -255,6 +236,7 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
+        "-s",
         "--sort",
         type=str,
         default="Relevance",
@@ -263,13 +245,7 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
-        "--save-image",
-        default=False,
-        metavar="",
-        help="save image? It takes a minute or two to save a picture! But pretty (default: %(default)s)",
-    )
-
-    subparser.add_argument(
+        "-f",
         "--file-format",
         type=str,
         default="md",
@@ -279,11 +255,39 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
+        "-l",
         "--language",
         type=str,
         default="en",
         metavar="",
         help="The other output lauguage is English, is en (default: %(default)s)",
+    )
+
+    subparser.add_argument(
+        "-c",
+        "--category",
+        type=str,
+        default="bioinformatics",
+        choices=CATEGORY_LIST,
+        action="extend",
+        nargs="+",
+        metavar="",
+        help="the category of user research fields (default: %(default)s)",
+    )
+    subparser.add_argument(
+        "--filter-keys",
+        type=str,
+        action="extend",
+        nargs="+",
+        metavar="",
+        help="the filter key words, every word in the abstract must have, otherwise it will not be selected as the target paper",
+    )
+
+    subparser.add_argument(
+        "--save-image",
+        default=False,
+        metavar="",
+        help="save image? It takes a minute or two to save a picture! But pretty (default: %(default)s)",
     )
 
     return name

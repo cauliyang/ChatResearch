@@ -173,7 +173,9 @@ def add_subcommand(parser):
     subparser = parser.add_parser(
         name, help="Fetch or Summary paper from local or arxiv"
     )
+
     subparser.add_argument(
+        "-p",
         "--pdf",
         type=str,
         default="",
@@ -182,6 +184,7 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
+        "-q",
         "--query",
         type=str,
         default="all: ChatGPT robot",
@@ -190,11 +193,49 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
+        "-k",
         "--key-word",
         type=str,
         default="reinforcement learning",
         metavar="",
         help="the key word of user research fields (default: %(default)s)",
+    )
+
+    subparser.add_argument(
+        "-m",
+        "--max-results",
+        type=int,
+        default=1,
+        metavar="",
+        help="the maximum number of results (default: %(default)s)",
+    )
+
+    subparser.add_argument(
+        "-s",
+        "--sort",
+        type=str,
+        default="Relevance",
+        metavar="",
+        help="another is LastUpdatedDate (default: %(default)s)",
+    )
+
+    subparser.add_argument(
+        "-f",
+        "--file-format",
+        type=str,
+        default="md",
+        choices=["md", "txt", "pdf", "tex"],
+        metavar="",
+        help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
+    )
+
+    subparser.add_argument(
+        "-l",
+        "--language",
+        type=str,
+        default="en",
+        metavar="",
+        help="The other output lauguage is English, is en (default: %(default)s)",
     )
 
     subparser.add_argument(
@@ -207,50 +248,16 @@ def add_subcommand(parser):
     )
 
     subparser.add_argument(
-        "--max-results",
-        type=int,
-        default=1,
-        metavar="",
-        help="the maximum number of results (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--sort",
-        type=str,
-        default="Relevance",
-        metavar="",
-        help="another is LastUpdatedDate (default: %(default)s)",
-    )
-
-    subparser.add_argument(
         "--save-image",
         default=False,
         metavar="",
         help="save image? It takes a minute or two to save a picture! But pretty (default: %(default)s)",
     )
 
-    subparser.add_argument(
-        "--file-format",
-        type=str,
-        default="md",
-        choices=["md", "txt", "pdf", "tex"],
-        metavar="",
-        help="the format of the exported file, if you save the picture, it is best to be md, if not, the txt will not be messy (default: %(default)s)",
-    )
-
-    subparser.add_argument(
-        "--language",
-        type=str,
-        default="en",
-        metavar="",
-        help="The other output lauguage is English, is en (default: %(default)s)",
-    )
-
     return name
 
 
 def main(args):
-    # 创建一个Reader对象，并调用show_info方法
     if args.sort == "Relevance":
         sort = arxiv.SortCriterion.Relevance
     elif args.sort == "LastUpdatedDate":
