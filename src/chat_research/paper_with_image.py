@@ -17,7 +17,7 @@ class Paper:
         self.title_page = 0
         self.pdf = fitz.open(self.path)  # pdf文档
 
-        self.title = self.get_title() if title == "" else title
+        self.title = self.fetch_title() if title == "" else title
 
         self.parse_pdf()
         self.authers = authers
@@ -122,7 +122,6 @@ class Paper:
     def get_chapter_names(
         self,
     ):
-        # # 打开一个pdf文件
         doc = fitz.open(self.path)  # pdf文档
         text_list = [page.get_text() for page in doc]
         all_text = ""
@@ -149,11 +148,13 @@ class Paper:
 
         return chapter_names
 
+    def fetch_title(self):
+        return self.pdf.metadata["title"]
+
     def get_title(self):
-        doc = self.pdf  # 打开pdf文件
         max_font_size = 0  # 初始化最大字体大小为0
         max_font_sizes = [0]
-        for page_index, page in enumerate(doc):  # 遍历每一页
+        for page_index, page in enumerate(self.pdf):  # 遍历每一页
             text = page.get_text("dict")  # 获取页面上的文本信息
             blocks = text["blocks"]  # 获取文本块列表
             for block in blocks:  # 遍历每个文本块
@@ -169,7 +170,8 @@ class Paper:
         max_font_sizes.sort()
         logger.trace(f"max_font_sizes {max_font_sizes[-10:]}")
         cur_title = ""
-        for page_index, page in enumerate(doc):  # 遍历每一页
+
+        for page_index, page in enumerate(self.pdf):  # 遍历每一页
             text = page.get_text("dict")  # 获取页面上的文本信息
             blocks = text["blocks"]  # 获取文本块列表
             for block in blocks:  # 遍历每个文本块
@@ -195,7 +197,7 @@ class Paper:
                                 else:
                                     cur_title += " " + cur_string
                             self.title_page = page_index
-                            # break
+
         title = cur_title.replace("\n", " ")
         return title
 
@@ -216,7 +218,6 @@ class Paper:
             "Method",
             "Approach",
             "Approaches",
-            # exp
             "Materials and Methods",
             "Experiment Settings",
             "Experiment",
@@ -231,27 +232,18 @@ class Paper:
             "Conclusion",
             "References",
         ]
-        # 初始化一个字典来存储找到的章节和它们在文档中出现的页码
         section_page_dict = {}
-        # 遍历每一页文档
         for page_index, page in enumerate(self.pdf):
-            # 获取当前页面的文本内容
             cur_text = page.get_text()
-            # 遍历需要寻找的章节名称列表
             for section_name in section_list:
-                # 将章节名称转换成大写形式
                 section_name_upper = section_name.upper()
-                # 如果当前页面包含"Abstract"这个关键词
                 if "Abstract" == section_name and section_name in cur_text:
-                    # 将"Abstract"和它所在的页码加入字典中
                     section_page_dict[section_name] = page_index
-                # 如果当前页面包含章节名称，则将章节名称和它所在的页码加入字典中
                 else:
                     if section_name + "\n" in cur_text:
                         section_page_dict[section_name] = page_index
                     elif section_name_upper + "\n" in cur_text:
                         section_page_dict[section_name] = page_index
-        # 返回所有找到的章节名称及它们在文档中出现的页码
         return section_page_dict
 
     def _get_all_page(self):
@@ -264,7 +256,6 @@ class Paper:
         text_list = []
         section_dict = {}
 
-        # 再处理其他章节：
         text_list = [page.get_text() for page in self.pdf]
         for sec_index, sec_name in enumerate(self.section_page_dict):
             logger.trace(
@@ -281,7 +272,9 @@ class Paper:
                     ]
                 else:
                     end_page = len(text_list)
+
                 logger.trace(f"{start_page=}, {end_page=}")
+
                 cur_sec_text = ""
                 if end_page - start_page == 0:
                     if sec_index < len(list(self.section_page_dict.keys())) - 1:
