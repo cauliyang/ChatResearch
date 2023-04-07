@@ -17,12 +17,12 @@ It provides several features such as generating summary papers, fetching and sum
 
 ## Why ChatResearch?
 
-Numerous projects and research endeavors have been undertaken in the realm of ChatGPT, yet none have met my specific requirements.
-As a result, I have resolved to
-create my own project, tailored to my personal preferences.
-I shall persist in refining and enhancing this project.
-Please do not hesitate to leave a star, and I am grateful for your support and ratings.
-I welcome any suggestions, proposals, and pull requests.
+There have been countless projects and research initiatives in the field of ChatGPT,
+but none have fulfilled my particular needs.
+Consequently, I have made the decision to develop my own project.
+I am committed to continuously refining and improving this project.
+Your support and ratings are greatly appreciated, so please do not hesitate to leave a star.
+I also welcome any suggestions, proposals, and pull requests.
 
 ## TODO
 
