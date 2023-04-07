@@ -16,7 +16,7 @@ class Paper:
         self.title_page = 0
         self.pdf = fitz.open(self.path)  # pdf文档
 
-        self.title = self.fetch_title() if title == "" else title
+        self.title = self.get_title() if title == "" else title
 
         self.parse_pdf()
         self.authers = authers
@@ -69,39 +69,33 @@ class Paper:
         :param image_path: 图片提取后的保存路径
         :return:
         """
-        # open file
         max_size = 0
         image_list = []
+        ext = None
         with fitz.Document(self.path) as my_pdf_file:
-            # 遍历所有页面
             for page_number in range(1, len(my_pdf_file) + 1):
-                # 查看独立页面
                 page = my_pdf_file[page_number - 1]
-                # 查看当前页所有图片
                 page.get_images()
-                # 遍历当前页面所有图片
-                for image_number, image in enumerate(page.get_images(), start=1):
-                    # 访问图片xref
+                for _, image in enumerate(page.get_images(), start=1):
                     xref_value = image[0]
-                    # 提取图片信息
                     base_image = my_pdf_file.extract_image(xref_value)
-                    # 访问图片
                     image_bytes = base_image["image"]
-                    # 获取图片扩展名
                     ext = base_image["ext"]
-                    # 加载图片
                     image = Image.open(io.BytesIO(image_bytes))
                     image_size = image.size[0] * image.size[1]
                     if image_size > max_size:
                         max_size = image_size
                     image_list.append(image)
 
+        if ext is None:
+            raise Exception("No image found in pdf")
+
         for image in image_list:
             image_size = image.size[0] * image.size[1]
             if image_size == max_size:
                 image_name = f"image.{ext}"
                 im_path = os.path.join(image_path, image_name)
-                logger.info(f"image_path: {im_path}")
+                logger.trace(f"image_path: {im_path}")
 
                 max_pix = 480
                 min(image.size[0], image.size[1])
@@ -118,7 +112,6 @@ class Paper:
                 return im_path, ext
         return None, None
 
-    # 定义一个函数，根据字体的大小，识别每个章节名称，并返回一个列表
     def get_chapter_names(
         self,
     ):
@@ -149,6 +142,7 @@ class Paper:
         return chapter_names
 
     def fetch_title(self):
+        logger.trace(self.pdf.metadata)
         return self.pdf.metadata["title"]
 
     def get_title(self):
@@ -202,7 +196,7 @@ class Paper:
         return title
 
     def _get_all_page_index(self):
-        # 定义需要寻找的章节名称列表
+        # define the chapter name list
         section_list = [
             "Abstract",
             "Introduction",
@@ -248,10 +242,12 @@ class Paper:
 
     def _get_all_page(self):
         """
-        获取PDF文件中每个页面的文本信息，并将文本信息按照章节组织成字典返回。
+
+        Get the text information of each page in the PDF file and return the text information as a dictionary according to the chapter.
 
         Returns:
-            section_dict (dict): 每个章节的文本信息字典，key为章节名，value为章节文本。
+            section_dict (dict): Text information dictionary for each chapter, key for chapter name, value for chapter text.
+
         """
         text_list = []
         section_dict = {}
@@ -264,7 +260,6 @@ class Paper:
             if sec_index <= 0 and self.abs:
                 continue
             else:
-                # 直接考虑后面的内容：
                 start_page = self.section_page_dict[sec_name]
                 if sec_index < len(list(self.section_page_dict.keys())) - 1:
                     end_page = self.section_page_dict[
