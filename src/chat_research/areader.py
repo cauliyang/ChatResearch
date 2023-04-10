@@ -82,8 +82,11 @@ class AsyncBaseReader:
             else:
                 raise e
 
-        # if (title := self.update_title(chat_summary_text)) is not None:
-        #     paper.title = title
+        if (
+            paper.title == ""
+            and (title := self.update_title(chat_summary_text)) is not None
+        ):
+            paper.title = title
 
         htmls.append("## Paper:" + str(paper_index + 1))
         htmls.append("\n\n\n")
