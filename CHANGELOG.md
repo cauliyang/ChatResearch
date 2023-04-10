@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.1.12] - 2023-04-10
+
+### Bug Fixes
+
+- 🐛 fix(chat_async_arxiv.py): fix import paths
+- 🐛 fix(paper_with_image.py): fix get_title method to use self.pdf instead of doc variable
+- 🐛 fix(areader.py): rename find_title to update_title
+- 🐛 fix(paper_with_image.py): raise exception if no image found in pdf
+- 🐛 fix(areader.py): set paper title only if it is empty and a new title is found
 
 ### Co-authored-by
 
@@ -18,19 +26,45 @@ All notable changes to this project will be documented in this file.
 - Dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
 - Dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
 - Dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+- Dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+- Dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+- Dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+### Documentation
+
+- Add example file
 
 ### Features
 
 - 🔧 chore(cliff.toml): update commit_parsers regex to match any commit message starting with feat, fix, doc, perf, refactor, style, test, chore, and ending with any character. Update filter_unconventional to false and split_commits to true.
 - 🚀 feat(.opencommitignore): add file to ignore certain file types in commits
+- ✨ feat(paper_with_image.py): add fetch_title method to fetch title from pdf metadata
+- Add export to PDF feature using custom template
 
 ### Miscellaneous Tasks
 
 - 🔧 chore(Makefile): replace aic with oc in commit script
+- 🔥 chore(paper_with_image.py): remove unused comments and variables
+- 🔥 chore(.gitignore): add 'download' to .gitignore
+- 🔖 chore(pyproject.toml): bump up version from 0.1.10 to 0.1.11
+
+### Refactor
+
+- Add short parameter
+- 🔥 refactor(paper.py): remove unused comment
+- 🔥 refactor(paper_with_image.py): remove unused comment and whitespace
+- 🔨 refactor(paper_with_image.py): remove unused code and add logging statements
+- 🔥 refactor(areader.py): remove unnecessary blank line
+- 🔥 refactor(chat_async_paper.py): remove unnecessary comments and blank lines
+- 🔨 refactor(areader.py): simplify conditional statement for updating paper title
 
 ### Signed-off-by
 
 - Dependabot[bot] <support@github.com>
+
+### Testing
+
+- Bump pytest from 7.2.2 to 7.3.0 (#17)
 
 ### Build
 
@@ -38,6 +72,8 @@ All notable changes to this project will be documented in this file.
 - Bump openai from 0.27.2 to 0.27.4 (#14)
 - Bump ruff from 0.0.260 to 0.0.261 (#13)
 - Bump pypa/gh-action-pypi-publish from 1.5.1 to 1.8.5 (#11)
+- Bump poetry from 1.4.1 to 1.4.2 in /.github/workflows (#15)
+- Bump loguru from 0.6.0 to 0.7.0 (#16)
 
 ## [0.1.10] - 2023-04-05
 

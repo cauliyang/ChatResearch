@@ -192,7 +192,8 @@ class AsyncBaseReader:
             export_path.mkdir(parents=True, exist_ok=True)
 
         file_name = (
-            Path(export_path) / f"{date_str}-{self.validateTitle(paper.title[:80])}"
+            Path(export_path)
+            / f"{date_str}-{self.validateTitle(paper.title[:80])}".strip()
         )
 
         await aexport(
@@ -222,13 +223,11 @@ class AsyncBaseReader:
                 "role": "system",
                 "content": f"You are a reviewer in the field of [{key_words}] and you need to critically review this article",
             },
-            # chatgpt 角色
             {
                 "role": "assistant",
                 "content": "This is the <summary> and <conclusion> part of an English literature, where <summary> you have already summarized, but <conclusion> part, I need your help to summarize the following questions:"
                 + clip_text,
             },
-            # 背景知识，可以参考OpenReview的审稿流程
             {
                 "role": "user",
                 "content": """
@@ -284,13 +283,11 @@ class AsyncBaseReader:
                 "role": "system",
                 "content": f"You are a researcher in the field of [{key_words}] who is good at summarizing papers using concise statements",
             },
-            # chatgpt 角色
             {
                 "role": "assistant",
                 "content": "This is the <summary> and <Method> part of an English document, where <summary> you have summarized, but the <Methods> part, I need your help to read and summarize the following questions."
                 + clip_text,
             },
-            # 背景知识
             {
                 "role": "user",
                 "content": """
@@ -361,8 +358,9 @@ class AsyncBaseReader:
                  2. list all the authors' names (use English)
                  3. mark the first author's affiliation (use English)
                  4. mark the keywords of this article (use English)
-                 5. link to the paper, Github code link (if available, fill in Github:None if not)
-                 6. summarize according to the following four points.Be sure to use {self.language} answers (proper nouns need to be marked in English)
+                 5. mark the link to the paper
+                 6. mark Github code link (if available, fill in Github:None if not)
+                 7. summarize according to the following four points.Be sure to use {self.language} answers (proper nouns need to be marked in English)
                     - (1):What is the research background of this article?
                     - (2):What are the past methods? What are the problems with them? Is the approach well motivated?
                     - (3):What is the research methodology proposed in this paper?
