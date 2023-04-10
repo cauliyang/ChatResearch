@@ -7,6 +7,8 @@ from pathlib import Path
 import aiofiles
 from loguru import logger
 
+from .template import aload_eis
+
 
 async def run(cmd) -> bool:
     proc = await asyncio.create_subprocess_shell(
@@ -59,7 +61,10 @@ async def amd2pdf(md_file: Path, pdf_file: Path, template=None) -> bool:
     ]
 
     if template is not None:
-        cmd += ["--template", template]
+        if isinstance(template, Path):
+            cmd += ["--template", template.as_posix()]
+        else:
+            cmd += ["--template", template]
 
     _cmd = shlex.join(cmd)
     is_success = await run(_cmd)
@@ -99,7 +104,10 @@ async def aexport_to_markdown(text: str, file_name, mode="w"):
 
 async def aexport_to_pdf(text: str, file_name: Path, mode="w", keep_md: bool = False):
     await aexport_to_markdown(text, file_name.with_suffix(".md"), mode)
-    flag = await amd2pdf(file_name.with_suffix(".md"), file_name.with_suffix(".pdf"))
+    template = await aload_eis()
+    flag = await amd2pdf(
+        file_name.with_suffix(".md"), file_name.with_suffix(".pdf"), template
+    )
     if flag:
         if not keep_md:
             file_name.with_suffix(".md").unlink()

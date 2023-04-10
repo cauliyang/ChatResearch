@@ -5,6 +5,8 @@ import toml
 from loguru import logger
 
 CONFIG_FILE_NAME = "chatre.toml"
+DEFAULT_PATH = Path.cwd() / CONFIG_FILE_NAME
+GLOBAL_PATH = Path.home() / ".config" / "chatre" / CONFIG_FILE_NAME
 
 
 def report_token_usage(response):
@@ -15,13 +17,10 @@ def report_token_usage(response):
 
 
 def load_config():
-    default_path = Path.cwd() / CONFIG_FILE_NAME
-    global_path = Path.home() / ".config" / CONFIG_FILE_NAME
-
-    if default_path.exists():
-        config = toml.load(default_path)
-    elif global_path.exists():
-        config = toml.load(global_path)
+    if DEFAULT_PATH.exists():
+        config = toml.load(DEFAULT_PATH)
+    elif GLOBAL_PATH.exists():
+        config = toml.load(GLOBAL_PATH)
     else:
         raise FileNotFoundError("No apikey.toml found")
 

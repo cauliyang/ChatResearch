@@ -15,7 +15,7 @@
 ChatResearch is a tool that uses OpenAI's GPT-3 to accelerate your research.
 It provides several features such as generating summary papers, fetching and summarizing papers from arxiv and bioarxiv, generating responses for review comments, and more.
 
-## Why ChatResearch?
+## :question: Why ChatResearch?
 
 There have been countless projects and research initiatives in the field of ChatGPT,
 but none have fulfilled my particular needs.
@@ -24,7 +24,9 @@ I am committed to continuously refining and improving this project.
 Your support and ratings are greatly appreciated, so please do not hesitate to leave a star.
 I also welcome any suggestions, proposals, and pull requests.
 
-## TODO
+## :rocket: News
+
+## :bookmark: TODO
 
 - [x] Multi thread and Asynchronous support
 - [x] Add GIF for document
@@ -36,7 +38,7 @@ I also welcome any suggestions, proposals, and pull requests.
 - [ ] Revise help message
 - [ ] add classic paper as examples
 
-## Features
+## :star2: Features
 
 - [Chat Config](#chat-config): Generate `chatre.toml` in current working directory or set environment variable `OPENAI_API_KEY`.
 - [Chat Paper](#chat-paper): Fetch or summary paper from local or arxiv with specified query, research fields, and language.
@@ -107,6 +109,8 @@ optional arguments:
   --research-fields   the research fields of paper (default: computer science, artificial intelligence and reinforcement learning)
   --language          output language, en or zh (default: en)
 ```
+
+## Develop Toolkit
 
 ## License
 

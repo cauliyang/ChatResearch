@@ -53,7 +53,6 @@ class AsyncBaseReader:
         self, paper: Paper, paper_index: int, key_words
     ):
         htmls = []
-        # 第一步先用title，abs，和introduction进行总结。
         text = ""
         text += "Title:" + paper.title
         text += "Url:" + paper.url
