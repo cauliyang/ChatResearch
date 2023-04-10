@@ -31,7 +31,6 @@ class AsyncBaseReader:
 
         self.max_token_num = 4096
         self.encoding = tiktoken.get_encoding("gpt2")
-
         self.token_usage = 0
 
     async def _summary_with_chat(self, paper_list: list[Paper], key_words):

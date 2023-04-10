@@ -31,9 +31,7 @@ class PaperParams(BaseModel):
         return v
 
 
-# 定义Reader类
 class Reader(AsyncBaseReader):
-    # 初始化方法，设置属性
     def __init__(
         self,
         key_word,
