@@ -3,5 +3,4 @@ poetry.lock
 **/*.gif
 **/*.png
 **/*.jpg
-**/*.md
 **/*.tex

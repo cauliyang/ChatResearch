@@ -10,7 +10,7 @@
 ChatResearch is a tool that uses OpenAI's GPT-3 to accelerate your research.
 It provides several features such as generating summary papers, fetching and summarizing papers from arxiv and bioarxiv, generating responses for review comments, and more.
 
-## :question: Why ChatResearch?
+## :question: Why ChatResearch
 
 There have been countless projects and research initiatives in the field of ChatGPT,
 but none have fulfilled my particular needs.
@@ -42,15 +42,13 @@ I also welcome any suggestions, proposals, and pull requests.
 - [Chat Response](#chat-response): Generate response for review comment with specified language.
 - [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example2.md), [PDF](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example1.pdf), and [Latex](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example5.tex)
 
-<img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/project.gif" width="800" height="400">
-
-## Installation
+## :gear: Installation
 
 ```console
 $pip install chat-research
 ```
 
-## Usage
+## :hugging_face: Usage
 
 <img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/help.gif" width="800" height="400">
 
@@ -105,7 +103,7 @@ optional arguments:
   --language          output language, en or zh (default: en)
 ```
 
-## Develop Toolkit
+## :facepunch: Develop Toolkit
 
 ## License
 
@@ -117,10 +115,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ![Alt](https://repobeats.axiom.co/api/embed/05714e0999ba02041b2be2307b7923d497c0b5c3.svg "Repobeats analytics image")
 
-## Acknowledgement
+## :clap: Acknowledgement
 
 - [ChatPaper](https://github.com/kaixindelele/ChatPaper/blob/main/README.md)
 - [Arxiv](https://github.com/lukasschwab/arxiv.py)
+
+<!-- links -->
 
 [black]: https://github.com/psf/black
 [license]: https://opensource.org/licenses/mit
