@@ -303,12 +303,12 @@ class AsyncBaseReader:
             {
                 "role": "user",
                 "content": """
-                 8. Make the following summary.Be sure to use {} answers (proper nouns need to be marked in English).
+                 9. Make the following summary.Be sure to use {} answers (proper nouns need to be marked in English).
                     - (1):What is the significance of this piece of work?
                     - (2):Summarize the strengths and weaknesses of this article in three dimensions: innovation point, performance, and workload.
                     .......
                  Follow the format of the output later:
-                 8. Conclusion: \n\n
+                 9. Conclusion: \n\n
                     - (1):xxx;\n
                     - (2):Innovation point: xxx; Performance: xxx; Workload: xxx;\n
 
@@ -382,13 +382,13 @@ class AsyncBaseReader:
             {
                 "role": "user",
                 "content": """
-                 7. Describe in detail the methodological idea of this article. Be sure to use {} answers (proper nouns need to be marked in English). For example, its steps are.
+                 8. Describe in detail the methodological idea of this article. Be sure to use {} answers (proper nouns need to be marked in English). For example, its steps are.
                     - (1):...
                     - (2):...
                     - (3):...
                     - .......
                  Follow the format of the output that follows:
-                 7. Methods: \n\n
+                 8. Methods: \n\n
                     - (1):xxx;\n
                     - (2):xxx;\n
                     - (3):xxx;\n

@@ -58,7 +58,6 @@ xxx
 """
 
 
-# 定义Reviewer类
 class Reviewer:
     # 初始化方法，设置属性
     def __init__(self, args=None):
@@ -280,7 +279,6 @@ def add_subcommand(parser):
 
 def main(args):
     reviewer1 = Reviewer(args=args)
-    # 开始判断是路径还是文件：
     paper_list = []
 
     if args.paper_path.endswith(".pdf"):

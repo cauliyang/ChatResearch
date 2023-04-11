@@ -39,6 +39,15 @@ class Section:
     ]
 
     def __init__(self, name: str, text: str, page: t.Optional[int] = None):
+        """
+        Initializes a Section object with a given name, text, and page number.
+
+        Args:
+            name (str): The name of the section.
+            text (str): The text content of the section.
+            page (int, optional): The page number where the section starts. Defaults to None.
+        """
+
         self.name = name
         self.text = text
         self.page = page
@@ -47,6 +56,12 @@ class Section:
         return f"Section(name={self.name}, page={self.page})"
 
     def is_method(self):
+        """
+        Checks if the section is a method section.
+
+        Returns:
+            bool: True if the section is a method section, False otherwise.
+        """
         # TODO: add more avalible name for method <Yangyang Li>
         return self.name.lower() in [
             "method",
@@ -58,6 +73,9 @@ class Section:
 
     def is_conclusion(self):
         return "conclu" in self.name.lower()
+
+    def is_introduction(self):
+        return "intro" in self.name.lower()
 
     def has_text(self):
         return self.text != ""
@@ -116,6 +134,9 @@ class Sections:
             if section.is_conclusion():
                 conclusions.append(section)
         return conclusions
+
+    def get_intro(self) -> Section:
+        return self._sections.get("Introduction")
 
 
 class Paper:
@@ -210,7 +231,7 @@ class Paper:
 
     def get_max_font_size(self, max_page_index=4):
         max_font_size = 0  # 初始化最大字体大小为0
-        max_font_sizes = [0]
+        all_font_sizes = [0]
 
         for page_index, page in enumerate(self.pdf):  # 遍历每一页
             if page_index < max_page_index:
@@ -222,12 +243,12 @@ class Paper:
                             font_size = block["lines"][0]["spans"][0][
                                 "size"
                             ]  # 获取第一行第一段文字的字体大小
-                            max_font_sizes.append(font_size)
+                            all_font_sizes.append(font_size)
                             if font_size > max_font_size:  # 如果字体大小大于当前最大值
                                 max_font_size = font_size  # 更新最大值
 
-        max_font_sizes.sort()
-        return max_font_sizes, max_font_size
+        all_font_sizes.sort()
+        return all_font_sizes, max_font_size
 
     def get_title(self, max_page_index=4):
         max_font_sizes, max_font_size = self.get_max_font_size(max_page_index)

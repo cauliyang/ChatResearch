@@ -59,11 +59,11 @@ class Reader(AsyncBaseReader):
             args.save_image,
         )
 
-        self.user_name = user_name  # 读者姓名
-        self.key_word = key_word  # 读者感兴趣的关键词
-        self.filter_keys = filter_keys  # 用于在摘要中筛选的关键词
-        self.query = query  # 读者输入的搜索查询
-        self.sort = sort  # 读者选择的排序方式
+        self.user_name = user_name  # name of the reader
+        self.key_word = key_word  # keyword of interest to the reader
+        self.filter_keys = filter_keys  # keywords used to filter abstracts
+        self.query = query  # search query entered by the reader
+        self.sort = sort  # sorting method selected by the reader
 
     def get_arxiv(self, max_results=30):
         search = arxiv.Search(
