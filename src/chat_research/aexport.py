@@ -105,9 +105,15 @@ async def aexport_to_markdown(text: str, file_name, mode="w"):
 async def aexport_to_pdf(text: str, file_name: Path, mode="w", keep_md: bool = False):
     await aexport_to_markdown(text, file_name.with_suffix(".md"), mode)
     template = await aload_eis()
-    flag = await amd2pdf(
-        file_name.with_suffix(".md"), file_name.with_suffix(".pdf"), template
-    )
+
+    try:
+        flag = await amd2pdf(
+            file_name.with_suffix(".md"), file_name.with_suffix(".pdf"), template
+        )
+    except FileNotFoundError:
+        logger.warning("failed to output pdf then fall back to md")
+        flag = False
+
     if flag:
         if not keep_md:
             file_name.with_suffix(".md").unlink()

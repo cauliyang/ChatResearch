@@ -48,7 +48,7 @@ I also welcome any suggestions, proposals, and pull requests.
 $pip install chat-research
 ```
 
-## :hugging_face: Usage
+## :face_with_monocle: Usage
 
 <img src="https://github.com/cauliyang/ChatResearch/blob/main//docs/tutorial/help.gif" width="800" height="400">
 

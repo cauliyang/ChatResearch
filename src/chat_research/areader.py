@@ -1,8 +1,12 @@
+"""
+Module containing AsyncBaseReader class for reading and summarizing papers with chatbot assistance.
+"""
 import asyncio
 import base64
 import datetime
 import re
 from pathlib import Path
+from typing import List
 
 import openai
 import requests
@@ -16,7 +20,22 @@ from .utils import load_config
 
 
 class AsyncBaseReader:
-    def __init__(self, root_path, language, file_format, save_image):
+    """
+    Class for reading and summarizing papers with chatbot assistance asynchronously.
+    """
+
+    def __init__(
+        self, root_path: str, language: str, file_format: str, save_image: bool
+    ):
+        """
+        Initializes AsyncBaseReader object with root path, language, file format, and save image flag.
+
+        Args:
+            root_path (str): Root path for saving files.
+            language (str): Language to use for chatbot.
+            file_format (str): File format to save papers in.
+            save_image (bool): Flag indicating whether to save images of papers.
+        """
         if isinstance(root_path, str):
             root_path = Path(root_path)
 
@@ -33,7 +52,17 @@ class AsyncBaseReader:
         self.encoding = tiktoken.get_encoding("gpt2")
         self.token_usage = 0
 
-    async def _summary_with_chat(self, paper_list: list[Paper], key_words):
+    async def _summary_with_chat(self, paper_list: List[Paper], key_words: List[str]):
+        """
+        Asynchronously summarizes papers with chatbot assistance.
+
+        Args:
+            paper_list (List[Paper]): List of Paper objects to summarize.
+            key_words (List[str]): List of key words to use for chatbot.
+
+        Returns:
+            None
+        """
         await asyncio.gather(
             *[
                 self.summary_with_chat_for_one_paper(paper, index, key_words)
@@ -41,10 +70,29 @@ class AsyncBaseReader:
             ]
         )
 
-    def summary_with_chat(self, paper_list: list[Paper], key_words):
+    def summary_with_chat(self, paper_list: List[Paper], key_words: List[str]):
+        """
+        Summarizes papers with chatbot assistance.
+
+        Args:
+            paper_list (List[Paper]): List of Paper objects to summarize.
+            key_words (List[str]): List of key words to use for chatbot.
+
+        Returns:
+            None
+        """
         asyncio.run(self._summary_with_chat(paper_list, key_words))
 
-    def update_title(self, text):
+    def update_title(self, text: str) -> str:
+        """
+        Updates the title of a paper based on the summary text.
+
+        Args:
+            text (str): Summary text to extract title from.
+
+        Returns:
+            str: Updated title.
+        """
         for line in text.split("\n"):
             if "Title:" in line:
                 return line.split("Title:")[1].strip()
@@ -52,14 +100,27 @@ class AsyncBaseReader:
     async def summary_with_chat_for_one_paper(
         self, paper: Paper, paper_index: int, key_words
     ):
-        htmls = []
+        """
+        Asynchronously summarizes a single paper with chatbot assistance.
+
+        Args:
+            paper (Paper): Paper object to summarize.
+            paper_index (int): Index of the paper in the list.
+            key_words (List[str]): List of key words to use for chatbot.
+
+        Returns:
+            None
+        """
+
+        result = []
         text = ""
         text += "Title:" + paper.title
         text += "Url:" + paper.url
         text += "Abstrat:" + paper.abs
-        text += "Paper_info:" + paper.section_text_dict["paper_info"]
-        # intro
-        text += list(paper.section_text_dict.values())[0]
+        text += "Paper_info:" + paper.sections["paper_info"].text
+        # abstract
+        text += list(paper.sections.sections())[0].text
+        logger.trace(f"summary paper_info: {text}")
         chat_summary_text = ""
 
         try:
@@ -88,27 +149,26 @@ class AsyncBaseReader:
         ):
             paper.title = title
 
-        htmls.append("## Paper:" + str(paper_index + 1))
-        htmls.append("\n\n\n")
-        htmls.append(chat_summary_text)
+        result.append("## Paper:" + str(paper_index + 1))
+        result.append("\n\n\n")
+        result.append(chat_summary_text)
 
-        # 第二步总结方法：
-        # WARNING，由于有些文章的方法章节名是算法名，
-        # 所以简单的通过关键词来筛选，很难获取，后面需要用其他的方案去优化。
-        method_key = ""
-        for parse_key in paper.section_text_dict.keys():
-            if "method" in parse_key.lower() or "approach" in parse_key.lower():
-                method_key = parse_key
-                break
+        method_section = None
+        method_sections = paper.sections.get_method()
+        for section in method_sections:
+            if section.has_text():
+                method_section = section
 
-        if method_key != "":
+        if method_section is not None:
             text = ""
             method_text = ""
             summary_text = ""
             summary_text += "<summary>" + chat_summary_text
             # methods
-            method_text += paper.section_text_dict[method_key]
+            method_text += method_section.text
+            logger.trace(f"method_text: {method_text}")
             text = summary_text + "\n\n<Methods>:\n\n" + method_text
+
             chat_method_text = ""
             try:
                 chat_method_text = await self.chat_method(
@@ -131,17 +191,17 @@ class AsyncBaseReader:
                         key_words=key_words,
                         method_prompt_token=method_prompt_token,
                     )
-            htmls.append(chat_method_text)
+            result.append(chat_method_text)
         else:
             chat_method_text = ""
 
-        htmls.append("\n" * 4)
+        result.append("\n" * 4)
 
         # 第三步总结全文，并打分：
-        conclusion_key = ""
-        for parse_key in paper.section_text_dict.keys():
-            if "conclu" in parse_key.lower():
-                conclusion_key = parse_key
+        conclusion_section = None
+        for section in paper.sections.get_conclusion():
+            if section.has_text():
+                conclusion_section = section
                 break
 
         text = ""
@@ -154,9 +214,8 @@ class AsyncBaseReader:
             + chat_method_text
         )
 
-        if conclusion_key != "":
-            # conclusion
-            conclusion_text += paper.section_text_dict[conclusion_key]
+        if conclusion_section is not None:
+            conclusion_text += conclusion_section.text
             text = summary_text + "\n\n<Conclusion>:\n\n" + conclusion_text
         else:
             text = summary_text
@@ -181,10 +240,9 @@ class AsyncBaseReader:
                     key_words=key_words,
                     conclusion_prompt_token=conclusion_prompt_token,
                 )
-        htmls.append(chat_conclusion_text)
-        htmls.append("\n" * 4)
+        result.append(chat_conclusion_text)
+        result.append("\n" * 4)
 
-        # # 整合成一个文件，打包保存下来。
         date_str = str(datetime.datetime.now())[:13].replace(" ", "-")
         export_path = self.root_path / "export"
 
@@ -197,7 +255,7 @@ class AsyncBaseReader:
         )
 
         await aexport(
-            content="\n".join([item.strip() for item in htmls]),
+            content="\n".join([item.strip() for item in result]),
             file_name=file_name.with_suffix(f".{self.file_format}"),
         )
 
@@ -206,7 +264,21 @@ class AsyncBaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    async def chat_conclusion(self, text, key_words, conclusion_prompt_token=800):
+    async def chat_conclusion(
+        self, text, key_words, conclusion_prompt_token=800
+    ) -> str:
+        """
+        Generates a conclusion for a given text using OpenAI's GPT-3 API.
+
+        Args:
+            text (str): The text to generate a conclusion for.
+            key_words (str): The key words related to the text.
+            conclusion_prompt_token (int, optional): The number of tokens to use as a prompt for the conclusion. Defaults to 800.
+
+        Returns:
+            str: The generated conclusion.
+        """
+
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -266,7 +338,26 @@ class AsyncBaseReader:
         stop=tenacity.stop_after_attempt(5),
         reraise=True,
     )
-    async def chat_method(self, text, key_words, method_prompt_token=800):
+    async def chat_method(self, text, key_words, method_prompt_token=800) -> str:
+        """
+        This function is responsible for generating a chat response to a given text prompt and key words. It uses OpenAI's GPT-3 model to generate a response.
+
+        The function takes in the following parameters:
+        - text: a string representing the text prompt to generate a response to
+        - key_words: a string representing the key words related to the text prompt
+        - method_prompt_token: an integer representing the maximum number of tokens to use for the method prompt
+
+        The function returns a string representing the generated response.
+
+        The function uses the tenacity library to retry the chat method up to 5 times if it fails.
+        The chat_method function is decorated with the @tenacity.retry decorator, which specifies the retry behavior.
+        The function first sets the OpenAI API key and then creates a list of messages to send to the GPT-3 model. The messages include a system message, an assistant message, and a user message.
+        The system message informs the user that they are a researcher in the field of the given key words.
+        The assistant message provides context for the user and includes a clipped version of the text prompt.
+        The user message includes a set of instructions for the user to follow in order to generate a response.
+        The function then uses the OpenAI ChatCompletion API to generate a response based on the messages sent to the model.
+        The response is then formatted and returned as the output of the function."""
+
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -326,10 +417,21 @@ class AsyncBaseReader:
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=4, max=10),
-        stop=tenacity.stop_after_attempt(5),
+        stop=tenacity.stop_after_attempt(3),
         reraise=True,
     )
-    async def chat_summary(self, text, key_words, summary_prompt_token=1100):
+    async def chat_summary(self, text, key_words, summary_prompt_token=1100) -> str:
+        """
+        Summarizes a research paper based on a set of instructions provided to the user.
+
+        Args:
+            text (str): The text of the research paper to be summarized.
+            key_words (str): The keywords associated with the research paper.
+            summary_prompt_token (int): The maximum number of tokens to be used in the summary prompt.
+
+        Returns:
+            str: The summarized text of the research paper.
+        """
         openai.api_key = self.chat_api_list[self.cur_api]
         self.cur_api += 1
         self.cur_api = (
@@ -371,7 +473,8 @@ class AsyncBaseReader:
                  3. Affiliation: xxx\n\n
                  4. Keywords: xxx\n\n
                  5. Urls: xxx or xxx , xxx \n\n
-                 6. Summary: \n\n
+                 6. Github: xxx or xxx , xxx \n\n
+                 7. Summary: \n\n
                     - (1):xxx;\n
                     - (2):xxx;\n
                     - (3):xxx;\n
@@ -394,29 +497,53 @@ class AsyncBaseReader:
 
         result = self.format_text(result)
         logger.trace(f"summary_result:\n{result}")
-
         self.report_token_usage(response)
-
         return result
 
     @staticmethod
-    def format_text(text):
+    def format_text(text: str) -> str:
+        """
+        Formats the text by removing unnecessary whitespaces and newlines.
+        Args:
+            text (str): The text to be formatted.
+        Returns:
+            str: The formatted text.
+        """
         result = ""
         for line in text.split("\n"):
             result += line.strip() + "\n"
         return result
 
-    def validateTitle(self, title):
-        # 将论文的乱七八糟的路径格式修正
+        result = ""
+        for line in text.split("\n"):
+            result += line.strip() + "\n"
+        return result
+
+    def validateTitle(self, title: str) -> str:
+        """
+        Validates the title by removing any invalid characters and replacing them with underscores.
+        Args:
+            title (str): The title to be validated.
+        Returns:
+            str: The validated title.
+        """
         rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/ \ : * ? " < > |'
         new_title = re.sub(rstr, "_", title)  # 替换为下划线
         return new_title
 
     def show_token_usage(self):
+        """
+        Displays the current token usage and corresponding price in USD.
+        """
         money = self.token_usage / 1000 * 0.002
         logger.info(f"TOKENS: {self.token_usage} / PRICES: ${money:.6f}")
 
     def report_token_usage(self, response):
+        """
+        Reports the token usage and response time for a given response.
+        Args:
+            response: The response object returned by the OpenAI API.
+        """
         logger.trace(f"prompt_token_used: {response.usage.prompt_tokens}")
         logger.trace(f"completion_token_used: {response.usage.completion_tokens}")
         logger.trace(f"total_token_used: {response.usage.total_tokens}")

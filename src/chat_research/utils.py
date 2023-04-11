@@ -22,7 +22,7 @@ def load_config():
     elif GLOBAL_PATH.exists():
         config = toml.load(GLOBAL_PATH)
     else:
-        raise FileNotFoundError("No apikey.toml found")
+        raise FileNotFoundError("No chatre.toml found")
 
     chat_api_list = config["OpenAI"]["OPENAI_API_KEYS"]
 

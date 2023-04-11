@@ -7,16 +7,15 @@ import fitz
 
 class Paper:
     def __init__(self, path, title="", url="", abs="", authors=[]):
-        # 初始化函数，根据pdf路径初始化Paper对象
-        self.url = url  # 文章链接
-        self.path = path  # pdf路径
+        self.url = url
+        self.path = path
         self.section_names = []  # 段落标题
         self.section_texts = {}  # 段落内容
         self.abs = abs
         self.title_page = 0
 
         if title == "":
-            self.pdf = fitz.open(self.path)  # pdf文档
+            self.pdf = fitz.open(self.path)
             self.title = self.get_title()
             self.parse_pdf()
         else:
