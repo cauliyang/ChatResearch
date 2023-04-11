@@ -21,6 +21,11 @@ I also welcome any suggestions, proposals, and pull requests.
 
 ## :rocket: News
 
+- Multi thread and Asynchronous support has been added.
+- GIFs have been added for documentation.
+- Config can now be used to set key.
+- Output for Latex and PDF is now supported.
+
 ## :bookmark: TODO
 
 - [x] Multi thread and Asynchronous support
@@ -40,12 +45,12 @@ I also welcome any suggestions, proposals, and pull requests.
 - [Chat Biorxiv](#chat-biorxiv): Fetch and summary paper from bioarxiv with specified category, filter keys, and language.
 - [Chat Reviewer](#chat-reviewer): Generate summary paper with specified research fields and language.
 - [Chat Response](#chat-response): Generate response for review comment with specified language.
-- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example2.md), [PDF](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example1.pdf), and [Latex](https://github.com/cauliyang/ChatResearch/blob/main/docs/images/example5.tex)
+- [Markdown](https://github.com/cauliyang/ChatResearch/blob/main/docs/examples/example2.md), [PDF](https://github.com/cauliyang/ChatResearch/blob/main/docs/examples/example1.pdf), and [Latex](https://github.com/cauliyang/ChatResearch/blob/main/docs/examples/example5.tex)
 
 ## :gear: Installation
 
 ```console
-$pip install chat-research
+pip install chat-research
 ```
 
 ## :face_with_monocle: Usage
