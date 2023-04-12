@@ -26,16 +26,15 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  - type: dropdown
+
+  - type: textarea
     id: version
     attributes:
       label: Version
       description: What version of our software are you running?
-      options:
-        - 1.0.0 (Default)
-        - 0.0.1 (Edge)
     validations:
       required: true
+
   - type: dropdown
     id: platform
     attributes:
@@ -45,6 +44,7 @@ body:
         - Mac Intel
         - Linux
         - Windows
+        - Mac M
   - type: textarea
     id: logs
     attributes:
