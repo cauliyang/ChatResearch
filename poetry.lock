@@ -172,14 +172,14 @@ test = ["coverage", "flake8", "mypy", "pexpect", "wheel"]
 
 [[package]]
 name = "arxiv"
-version = "1.4.4"
+version = "1.4.7"
 description = "Python wrapper for the arXiv API: http://arxiv.org/help/api/"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "arxiv-1.4.4-py3-none-any.whl", hash = "sha256:ca2224ebc4c6e23a0917db7704b6c2748520f9c3f15a2780f7f4c5794ec1788b"},
-    {file = "arxiv-1.4.4.tar.gz", hash = "sha256:7ac914375e64357f058d6a6bcccf2cdb00aeed86ef4650ca7151867bd09df199"},
+    {file = "arxiv-1.4.7-py3-none-any.whl", hash = "sha256:22b8f610957bb6859a25fac9dc205ab6ba76d521791119a5762ea52625e398a0"},
+    {file = "arxiv-1.4.7.tar.gz", hash = "sha256:100c8d6b9cd04c7f55f11b34616beb7a1623ab0564b66161b4aeeeb8912c5806"},
 ]
 
 [package.dependencies]
