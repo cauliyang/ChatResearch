@@ -30,7 +30,7 @@ markdown = "^3.4.3"
 bs4 = "^0.0.1"
 loguru = ">=0.6,<0.8"
 rich = "^13.3.3"
-pydantic = "^1.10.7"
+pydantic = ">=1.10.7,<3.0.0"
 types-requests = "^2.28.11.17"
 toml = "^0.10.2"
 aiohttp = {extras = ["speedups"], version = "^3.8.4"}
