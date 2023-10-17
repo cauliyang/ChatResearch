@@ -178,17 +178,18 @@ test = ["coverage", "flake8", "mypy", "pexpect", "wheel"]
 
 [[package]]
 name = "arxiv"
-version = "1.4.8"
-description = "Python wrapper for the arXiv API: http://arxiv.org/help/api/"
+version = "2.0.0"
+description = "Python wrapper for the arXiv API: https://arxiv.org/help/api/"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "arxiv-1.4.8-py3-none-any.whl", hash = "sha256:c3dbef0fb7ed85c9b4c2157b40a62f5a04ce0d2f63c3ff7caa7798abf6166378"},
-    {file = "arxiv-1.4.8.tar.gz", hash = "sha256:2a818ea749eaa62a6e24fc31d53b769b4d33ff55cfc5dda7c7b7d309a3b29373"},
+    {file = "arxiv-2.0.0-py3-none-any.whl", hash = "sha256:d64dd4b020782b91c267bcd3b98a1b9542250ab135fb54a1e298e8364722210c"},
+    {file = "arxiv-2.0.0.tar.gz", hash = "sha256:97f910dadf97169793ab3fcf12e75d23cb9dac4dc7c16de8b09492cde179da9f"},
 ]
 
 [package.dependencies]
-feedparser = "*"
+feedparser = "6.0.10"
+requests = "2.31.0"
 
 [[package]]
 name = "asttokens"
@@ -2404,4 +2405,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "9e1fc069dec4f5b4c686b32fcbf2c1638bf546ca3094a756aa273dfdd540b61e"
+content-hash = "7591547d77116388ad410902a7bcd7c9ec67e57bd929d41e729e0c1b9470cd90"
