@@ -2150,40 +2150,47 @@ tests = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "tiktoken"
-version = "0.5.1"
+version = "0.6.0"
 description = "tiktoken is a fast BPE tokeniser for use with OpenAI's models"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "tiktoken-0.5.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2b0bae3fd56de1c0a5874fb6577667a3c75bf231a6cef599338820210c16e40a"},
-    {file = "tiktoken-0.5.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:e529578d017045e2f0ed12d2e00e7e99f780f477234da4aae799ec4afca89f37"},
-    {file = "tiktoken-0.5.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:edd2ffbb789712d83fee19ab009949f998a35c51ad9f9beb39109357416344ff"},
-    {file = "tiktoken-0.5.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e4c73d47bdc1a3f1f66ffa019af0386c48effdc6e8797e5e76875f6388ff72e9"},
-    {file = "tiktoken-0.5.1-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:46b8554b9f351561b1989157c6bb54462056f3d44e43aa4e671367c5d62535fc"},
-    {file = "tiktoken-0.5.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:92ed3bbf71a175a6a4e5fbfcdb2c422bdd72d9b20407e00f435cf22a68b4ea9b"},
-    {file = "tiktoken-0.5.1-cp310-cp310-win_amd64.whl", hash = "sha256:714efb2f4a082635d9f5afe0bf7e62989b72b65ac52f004eb7ac939f506c03a4"},
-    {file = "tiktoken-0.5.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:a10488d1d1a5f9c9d2b2052fdb4cf807bba545818cb1ef724a7f5d44d9f7c3d4"},
-    {file = "tiktoken-0.5.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:8079ac065572fe0e7c696dbd63e1fdc12ce4cdca9933935d038689d4732451df"},
-    {file = "tiktoken-0.5.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7ef730db4097f5b13df8d960f7fdda2744fe21d203ea2bb80c120bb58661b155"},
-    {file = "tiktoken-0.5.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:426e7def5f3f23645dada816be119fa61e587dfb4755de250e136b47a045c365"},
-    {file = "tiktoken-0.5.1-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:323cec0031358bc09aa965c2c5c1f9f59baf76e5b17e62dcc06d1bb9bc3a3c7c"},
-    {file = "tiktoken-0.5.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:5abd9436f02e2c8eda5cce2ff8015ce91f33e782a7423de2a1859f772928f714"},
-    {file = "tiktoken-0.5.1-cp311-cp311-win_amd64.whl", hash = "sha256:1fe99953b63aabc0c9536fbc91c3c9000d78e4755edc28cc2e10825372046a2d"},
-    {file = "tiktoken-0.5.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:dcdc630461927718b317e6f8be7707bd0fc768cee1fdc78ddaa1e93f4dc6b2b1"},
-    {file = "tiktoken-0.5.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1f2b3b253e22322b7f53a111e1f6d7ecfa199b4f08f3efdeb0480f4033b5cdc6"},
-    {file = "tiktoken-0.5.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:43ce0199f315776dec3ea7bf86f35df86d24b6fcde1babd3e53c38f17352442f"},
-    {file = "tiktoken-0.5.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a84657c083d458593c0235926b5c993eec0b586a2508d6a2020556e5347c2f0d"},
-    {file = "tiktoken-0.5.1-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:c008375c0f3d97c36e81725308699116cd5804fdac0f9b7afc732056329d2790"},
-    {file = "tiktoken-0.5.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:779c4dea5edd1d3178734d144d32231e0b814976bec1ec09636d1003ffe4725f"},
-    {file = "tiktoken-0.5.1-cp38-cp38-win_amd64.whl", hash = "sha256:b5dcfcf9bfb798e86fbce76d40a1d5d9e3f92131aecfa3d1e5c9ea1a20f1ef1a"},
-    {file = "tiktoken-0.5.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:9b180a22db0bbcc447f691ffc3cf7a580e9e0587d87379e35e58b826ebf5bc7b"},
-    {file = "tiktoken-0.5.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:2b756a65d98b7cf760617a6b68762a23ab8b6ef79922be5afdb00f5e8a9f4e76"},
-    {file = "tiktoken-0.5.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ba9873c253ca1f670e662192a0afcb72b41e0ba3e730f16c665099e12f4dac2d"},
-    {file = "tiktoken-0.5.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:74c90d2be0b4c1a2b3f7dde95cd976757817d4df080d6af0ee8d461568c2e2ad"},
-    {file = "tiktoken-0.5.1-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:709a5220891f2b56caad8327fab86281787704931ed484d9548f65598dea9ce4"},
-    {file = "tiktoken-0.5.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:5d5a187ff9c786fae6aadd49f47f019ff19e99071dc5b0fe91bfecc94d37c686"},
-    {file = "tiktoken-0.5.1-cp39-cp39-win_amd64.whl", hash = "sha256:e21840043dbe2e280e99ad41951c00eff8ee3b63daf57cd4c1508a3fd8583ea2"},
-    {file = "tiktoken-0.5.1.tar.gz", hash = "sha256:27e773564232004f4f810fd1f85236673ec3a56ed7f1206fc9ed8670ebedb97a"},
+    {file = "tiktoken-0.6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:277de84ccd8fa12730a6b4067456e5cf72fef6300bea61d506c09e45658d41ac"},
+    {file = "tiktoken-0.6.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9c44433f658064463650d61387623735641dcc4b6c999ca30bc0f8ba3fccaf5c"},
+    {file = "tiktoken-0.6.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:afb9a2a866ae6eef1995ab656744287a5ac95acc7e0491c33fad54d053288ad3"},
+    {file = "tiktoken-0.6.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c62c05b3109fefca26fedb2820452a050074ad8e5ad9803f4652977778177d9f"},
+    {file = "tiktoken-0.6.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:0ef917fad0bccda07bfbad835525bbed5f3ab97a8a3e66526e48cdc3e7beacf7"},
+    {file = "tiktoken-0.6.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:e095131ab6092d0769a2fda85aa260c7c383072daec599ba9d8b149d2a3f4d8b"},
+    {file = "tiktoken-0.6.0-cp310-cp310-win_amd64.whl", hash = "sha256:05b344c61779f815038292a19a0c6eb7098b63c8f865ff205abb9ea1b656030e"},
+    {file = "tiktoken-0.6.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:cefb9870fb55dca9e450e54dbf61f904aab9180ff6fe568b61f4db9564e78871"},
+    {file = "tiktoken-0.6.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:702950d33d8cabc039845674107d2e6dcabbbb0990ef350f640661368df481bb"},
+    {file = "tiktoken-0.6.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e8d49d076058f23254f2aff9af603863c5c5f9ab095bc896bceed04f8f0b013a"},
+    {file = "tiktoken-0.6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:430bc4e650a2d23a789dc2cdca3b9e5e7eb3cd3935168d97d43518cbb1f9a911"},
+    {file = "tiktoken-0.6.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:293cb8669757301a3019a12d6770bd55bec38a4d3ee9978ddbe599d68976aca7"},
+    {file = "tiktoken-0.6.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:7bd1a288b7903aadc054b0e16ea78e3171f70b670e7372432298c686ebf9dd47"},
+    {file = "tiktoken-0.6.0-cp311-cp311-win_amd64.whl", hash = "sha256:ac76e000183e3b749634968a45c7169b351e99936ef46f0d2353cd0d46c3118d"},
+    {file = "tiktoken-0.6.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:17cc8a4a3245ab7d935c83a2db6bb71619099d7284b884f4b2aea4c74f2f83e3"},
+    {file = "tiktoken-0.6.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:284aebcccffe1bba0d6571651317df6a5b376ff6cfed5aeb800c55df44c78177"},
+    {file = "tiktoken-0.6.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0c1a3a5d33846f8cd9dd3b7897c1d45722f48625a587f8e6f3d3e85080559be8"},
+    {file = "tiktoken-0.6.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6318b2bb2337f38ee954fd5efa82632c6e5ced1d52a671370fa4b2eff1355e91"},
+    {file = "tiktoken-0.6.0-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:1f5f0f2ed67ba16373f9a6013b68da298096b27cd4e1cf276d2d3868b5c7efd1"},
+    {file = "tiktoken-0.6.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:75af4c0b16609c2ad02581f3cdcd1fb698c7565091370bf6c0cf8624ffaba6dc"},
+    {file = "tiktoken-0.6.0-cp312-cp312-win_amd64.whl", hash = "sha256:45577faf9a9d383b8fd683e313cf6df88b6076c034f0a16da243bb1c139340c3"},
+    {file = "tiktoken-0.6.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:7c1492ab90c21ca4d11cef3a236ee31a3e279bb21b3fc5b0e2210588c4209e68"},
+    {file = "tiktoken-0.6.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:e2b380c5b7751272015400b26144a2bab4066ebb8daae9c3cd2a92c3b508fe5a"},
+    {file = "tiktoken-0.6.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c9f497598b9f58c99cbc0eb764b4a92272c14d5203fc713dd650b896a03a50ad"},
+    {file = "tiktoken-0.6.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e65e8bd6f3f279d80f1e1fbd5f588f036b9a5fa27690b7f0cc07021f1dfa0839"},
+    {file = "tiktoken-0.6.0-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:5f1495450a54e564d236769d25bfefbf77727e232d7a8a378f97acddee08c1ae"},
+    {file = "tiktoken-0.6.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:6c4e4857d99f6fb4670e928250835b21b68c59250520a1941618b5b4194e20c3"},
+    {file = "tiktoken-0.6.0-cp38-cp38-win_amd64.whl", hash = "sha256:168d718f07a39b013032741867e789971346df8e89983fe3c0ef3fbd5a0b1cb9"},
+    {file = "tiktoken-0.6.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:47fdcfe11bd55376785a6aea8ad1db967db7f66ea81aed5c43fad497521819a4"},
+    {file = "tiktoken-0.6.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:fb7d2ccbf1a7784810aff6b80b4012fb42c6fc37eaa68cb3b553801a5cc2d1fc"},
+    {file = "tiktoken-0.6.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1ccb7a111ee76af5d876a729a347f8747d5ad548e1487eeea90eaf58894b3138"},
+    {file = "tiktoken-0.6.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b2048e1086b48e3c8c6e2ceeac866561374cd57a84622fa49a6b245ffecb7744"},
+    {file = "tiktoken-0.6.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:07f229a5eb250b6403a61200199cecf0aac4aa23c3ecc1c11c1ca002cbb8f159"},
+    {file = "tiktoken-0.6.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:432aa3be8436177b0db5a2b3e7cc28fd6c693f783b2f8722539ba16a867d0c6a"},
+    {file = "tiktoken-0.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:8bfe8a19c8b5c40d121ee7938cd9c6a278e5b97dc035fd61714b4f0399d2f7a1"},
+    {file = "tiktoken-0.6.0.tar.gz", hash = "sha256:ace62a4ede83c75b0374a2ddfa4b76903cf483e9cb06247f566be3bf14e6beed"},
 ]
 
 [package.dependencies]
@@ -2453,4 +2460,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "87fb83b6e3e226af2c75767edaca165b370cf9a97feb536f59407d48ac51c44a"
+content-hash = "07c55de65423bf4abbf5e3e17399dd4986979bfa53553f72a68fb3846b1008df"
